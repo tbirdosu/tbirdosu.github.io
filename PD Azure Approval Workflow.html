@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Deployment Governance Proposal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Slate & Blue Professional. Background: slate-50 (light). Primary: blue-600. Secondary: slate-700. Accents: red-500 (Current/Risk), emerald-600 (Proposed/Safe). -->
+    <!-- Application Structure Plan: A reactive, dashboard-style SPA that guides the user through the "Why", "What", and "How" of the deployment process change. 
+         1. Executive Summary & Context (The "Why").
+         2. Interactive Process Toggle (The "What"): A central interactive flow that switches between the Current (problematic) state and the Proposed (secure) state, updating both the visual diagram and a corresponding risk chart. This was chosen to clearly contrast the chaos of manual pushes with the order of automated pipelines.
+         3. Resource Decision Matrix (The "How"): Interactive cards comparing Switchbox's review scheduling options (Scheduled vs. Ad-hoc), directly addressing the client's need to make a resource decision. 
+    -->
+    <!-- Visualization & Content Choices: 
+         - Goal: Compare workflows -> Viz: HTML/CSS CSS Grid flow diagrams -> Interaction: State Toggle -> Justification: Shows structural differences clearly without SVG/Mermaid.
+         - Goal: Quantify process impact -> Viz: Chart.js Radar Chart -> Interaction: Auto-updates on state toggle -> Justification: Radar charts perfectly illustrate multiple dimensions of risk (Layout breaks, Sync issues, Untested code) dropping dramatically under the new process.
+         - Goal: Facilitate decision -> Viz: Interactive Comparison Cards -> Interaction: Click to expand details -> Justification: Organizes TJ's scheduling options into easily digestible pros/cons.
+         - Library/Method: Vanilla JS state management, Tailwind for layout, Chart.js for data viz.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        /* Base Styles */
+        body {
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Chart Container Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Constrain max width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base height */
+            max-height: 400px;
+        }
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 250px; /* Responsive height for mobile */
+            }
+        }
+
+        /* Custom Interactive Elements */
+        .process-node {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .process-node:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Unicode Icon Sizing */
+        .u-icon {
+            font-size: 1.5rem;
+            line-height: 1;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Toggle Switch Styling */
+        .toggle-btn {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .toggle-active-current {
+            background-color: #ef4444; /* red-500 */
+            color: white;
+            border-color: #ef4444;
+        }
+        .toggle-active-proposed {
+            background-color: #10b981; /* emerald-500 */
+            color: white;
+            border-color: #10b981;
+        }
+        .toggle-inactive {
+            background-color: #f1f5f9; /* slate-100 */
+            color: #64748b; /* slate-500 */
+            border-color: #cbd5e1;
+        }
+
+        /* Flow Connectors */
+        .connector-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #94a3b8;
+        }
+        @media (max-width: 768px) {
+            .connector-arrow { transform: rotate(90deg); margin: 0.5rem 0; }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <span class="text-blue-600">&#x2699;</span> Deployment Governance
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">Process Evaluation & Resource Planning</p>
+            </div>
+            <div class="hidden sm:flex space-x-4 text-sm font-medium">
+                <a href="#context" class="text-slate-500 hover:text-blue-600 transition">Context</a>
+                <a href="#process-evolution" class="text-slate-500 hover:text-blue-600 transition">Workflow</a>
+                <a href="#resource-planning" class="text-slate-500 hover:text-blue-600 transition">Resources</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- 1. Executive Context Section -->
+        <section id="context" class="space-y-6">
+            <div class="max-w-3xl">
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">The Catalyst for Change</h2>
+                <p class="mt-4 text-lg text-slate-600 leading-relaxed">
+                    This section outlines the primary drivers behind the need for a formalized deployment process. Recent incidents have highlighted the risks of direct production access, emphasizing the need to transition to a more secure, enterprise-level workflow.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Highlight Card 1 -->
+                <div class="bg-white rounded-xl p-6 border-l-4 border-red-500 shadow-sm">
+                    <span class="u-icon text-red-500">&#x26A0;</span> <!-- Warning icon -->
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">Direct Production Pushes</h3>
+                    <p class="text-slate-600 text-sm">Code pushed directly to production from local environments (e.g., Visual Studio) bypasses safety checks, leading to severe layout breaks (e.g., footer updates breaking the 2026 UI).</p>
+                </div>
+                <!-- Highlight Card 2 -->
+                <div class="bg-white rounded-xl p-6 border-l-4 border-orange-500 shadow-sm">
+                    <span class="u-icon text-orange-500">&#x21C4;</span> <!-- Arrows icon -->
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">Environment Discrepancies</h3>
+                    <p class="text-slate-600 text-sm">Manual updates to server files (like JSON warranty data) create environments that are out-of-sync with version control, threatening data overwrites on the next automated deployment.</p>
+                </div>
+                <!-- Highlight Card 3 -->
+                <div class="bg-white rounded-xl p-6 border-l-4 border-blue-500 shadow-sm">
+                    <span class="u-icon text-blue-500">&#x1F6A7;</span> <!-- Construction icon -->
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">Lack of Dev Testing</h3>
+                    <p class="text-slate-600 text-sm">Changes are frequently made without being verified in the Development or Test environments first. The new objective is strictly: <em>"The only place you should be testing things is development."</em></p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-slate-200">
+
+        <!-- 2. Interactive Process Evolution Section -->
+        <section id="process-evolution" class="space-y-8 bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-slate-100">
+            <div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Process Evolution Dashboard</h2>
+                <p class="mt-4 text-lg text-slate-600 leading-relaxed max-w-4xl">
+                    Interact with the toggle below to compare the current ad-hoc deployment method with the proposed enterprise-grade pipeline. This visualizer demonstrates how the introduction of a "Multiple Approver Gate" and automated deployment slots mitigates critical infrastructure risks.
+                </p>
+            </div>
+
+            <!-- State Toggle Controls -->
+            <div class="flex justify-center my-8">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button type="button" id="btn-current" class="toggle-btn toggle-active-current px-6 py-3 text-sm font-medium border rounded-l-lg focus:z-10 focus:ring-2 focus:ring-slate-500">
+                        &#x2716; Current State (High Risk)
+                    </button>
+                    <button type="button" id="btn-proposed" class="toggle-btn toggle-inactive px-6 py-3 text-sm font-medium border-t border-b border-r rounded-r-lg focus:z-10 focus:ring-2 focus:ring-slate-500">
+                        &#x2714; Proposed Workflow (Enterprise)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+                
+                <!-- Interactive Flow Diagram (Takes up 3 columns) -->
+                <div class="lg:col-span-3 space-y-4">
+                    <h3 class="text-xl font-bold text-slate-800 text-center mb-6" id="flow-title">Current Manual Process</h3>
+                    
+                    <!-- Dynamic HTML Diagram Container -->
+                    <div id="diagram-container" class="flex flex-col md:flex-row items-stretch md:items-center justify-between bg-slate-50 p-6 rounded-xl border border-slate-200 min-h-[250px]">
+                        <!-- Content injected via JS -->
+                    </div>
+
+                    <!-- Dynamic Context Text -->
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r mt-4">
+                        <p id="flow-description" class="text-sm text-blue-800">
+                            Developers push code directly from local machines to production, bypassing review. If a mistake is made, it immediately impacts live users.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Risk Radar Chart (Takes up 2 columns) -->
+                <div class="lg:col-span-2 flex flex-col items-center justify-center bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Risk Factor Analysis</h3>
+                    <p class="text-xs text-slate-500 mb-4 text-center">Quantifying potential failure points</p>
+                    
+                    <!-- REQUIRED CHART CONTAINER STYLING -->
+                    <div class="chart-container w-full">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-slate-200">
+
+        <!-- 3. Resource Planning & Decision Matrix -->
+        <section id="resource-planning" class="space-y-8">
+            <div class="max-w-3xl">
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Resource Planning Options</h2>
+                <p class="mt-4 text-lg text-slate-600 leading-relaxed">
+                    To implement the "Two-Approver Gate" successfully, Switchbox requires a defined cadence for reviewing Pull Requests (PRs). Review the options below to decide how to allocate review resources. 
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Option A -->
+                <div class="process-node bg-white border border-slate-200 rounded-2xl p-8 relative overflow-hidden group cursor-pointer" onclick="toggleDetails('details-a')">
+                    <div class="absolute top-0 right-0 bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-bl-lg">Option A</div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl">
+                            &#x23F0; <!-- Clock -->
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800">Scheduled Cadence</h3>
+                    </div>
+                    <p class="text-slate-600 mb-4">A dedicated, blocked timeframe (e.g., Monday afternoon for 2 hours) exclusively reserved for PR reviews and approvals.</p>
+                    
+                    <button class="text-blue-600 text-sm font-semibold flex items-center gap-1 group-hover:underline">
+                        View Technical Impact &#x25BC;
+                    </button>
+
+                    <div id="details-a" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-2 text-sm text-slate-600">
+                        <p><strong><span class="text-green-600">&#x2714;</span> Predictability:</strong> Deployments happen on a known schedule. Easy to budget.</p>
+                        <p><strong><span class="text-red-500">&#x2716;</span> Bottlenecks:</strong> Code sits idle until the scheduled window. Not ideal for rapid, mid-week feature releases.</p>
+                    </div>
+                </div>
+
+                <!-- Option B -->
+                <div class="process-node bg-white border border-slate-200 rounded-2xl p-8 relative overflow-hidden group cursor-pointer" onclick="toggleDetails('details-b')">
+                    <div class="absolute top-0 right-0 bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-bl-lg">Option B</div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-2xl">
+                            &#x1F514; <!-- Bell -->
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800">Ad-Hoc / As-Needed</h3>
+                    </div>
+                    <p class="text-slate-600 mb-4">Reviewers are alerted via Azure DevOps when a PR is submitted and review it as soon as bandwidth permits.</p>
+                    
+                    <button class="text-purple-600 text-sm font-semibold flex items-center gap-1 group-hover:underline">
+                        View Technical Impact &#x25BC;
+                    </button>
+
+                    <div id="details-b" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-2 text-sm text-slate-600">
+                        <p><strong><span class="text-green-600">&#x2714;</span> Flexibility:</strong> Code can move to production on any day of the week once approved.</p>
+                        <p><strong><span class="text-red-500">&#x2716;</span> Variable Turnaround:</strong> No guaranteed SLA for reviews. Relies on reviewers having open time during the day.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Exception Handling -->
+        <section class="bg-slate-800 rounded-2xl p-8 text-white mt-12 shadow-lg">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1 space-y-4">
+                    <h3 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="text-red-400">&#x26D1;</span> Emergency Protocols
+                    </h3>
+                    <p class="text-slate-300">
+                        While the goal is to eliminate manual pushes, exceptions exist for critical downtime (e.g., "Sunday Night Site Down").
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-slate-300 space-y-2">
+                        <li>Management can authorize an override command to deploy immediately.</li>
+                        <li>Any manual hotfix applied to JSON or site files <strong>must</strong> be retroactively committed to Azure DevOps to maintain the Source of Truth.</li>
+                        <li>Sitefinity template changes are mitigated by the new Manifest JSON configuration, separating static app builds from CMS templates.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-8 text-center text-sm text-slate-500">
+        <p>Interactive Analysis based on Jan 20, 2026 Process Meeting</p>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // --- Data Storage & State Management ---
+        const AppState = {
+            currentView: 'current', // 'current' or 'proposed'
+            
+            // Flow Diagram Data
+            flowData: {
+                current: [
+                    { id: 1, title: 'Developer', desc: 'Writes code locally', icon: '&#x1F4BB;', color: 'bg-slate-100 text-slate-800' },
+                    { id: 2, title: 'Visual Studio', desc: 'Direct push initiated', icon: '&#x26A1;', color: 'bg-red-100 text-red-800 border border-red-300' },
+                    { id: 3, title: 'Production', desc: 'Live site updated blindly', icon: '&#x1F310;', color: 'bg-red-500 text-white shadow-lg' }
+                ],
+                proposed: [
+                    { id: 1, title: 'Dev Env', desc: 'Tested in Development', icon: '&#x1F527;', color: 'bg-slate-100 text-slate-800' },
+                    { id: 2, title: 'Azure DevOps', desc: 'Pull Request Submitted', icon: '&#x21C4;', color: 'bg-blue-100 text-blue-800' },
+                    { id: 3, title: '2-Approver Gate', desc: 'Switchbox + Internal Lead', icon: '&#x1F512;', color: 'bg-amber-100 text-amber-800 border-2 border-amber-400' },
+                    { id: 4, title: 'Staging Slot', desc: 'Automated health check', icon: '&#x2692;', color: 'bg-emerald-100 text-emerald-800' },
+                    { id: 5, title: 'Production', desc: 'Traffic swapped seamlessly', icon: '&#x2705;', color: 'bg-emerald-500 text-white shadow-lg' }
+                ]
+            },
+            
+            // Textual Content Data
+            textContent: {
+                current: "Developers push code directly from local machines to production, bypassing review. Small errors (like missing files or bad logic) immediately break the live layout.",
+                proposed: "Code must be vetted in the Dev environment. It is then submitted via a Pull Request requiring two unique approvals. Finally, automated pipelines deploy to a staging slot, verifying stability before swapping to live production."
+            },
+
+            // Chart Data
+            chartData: {
+                labels: ['Layout Breaks', 'Sync Issues', 'Untested Code', 'Downtime Risk', 'Process Overhead'],
+                datasets: {
+                    current: {
+                        label: 'Current Risk Level',
+                        data: [90, 85, 95, 80, 10], // High risk, low overhead
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)', // red-500
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                    },
+                    proposed: {
+                        label: 'Proposed Risk Level',
+                        data: [15, 10, 5, 20, 60], // Low risk, higher overhead (approval process)
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)', // emerald-500
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                    }
+                }
+            }
+        };
+
+        // --- Core Interaction Handling ---
+        
+        // 1. Chart Initialization
+        let riskChartInstance = null;
+        
+        function initChart() {
+            const ctx = document.getElementById('riskChart').getContext('2d');
+            
+            // Chart.js Configuration ensuring responsiveness and adherence to constraints
+            const config = {
+                type: 'radar',
+                data: {
+                    labels: AppState.chartData.labels,
+                    datasets: [ AppState.chartData.datasets.current ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // CRITICAL for container constraints
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: {
+                                font: { size: 11, family: "'Segoe UI', sans-serif" },
+                                color: '#64748b' // slate-500
+                            },
+                            ticks: { display: false, min: 0, max: 100 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 12 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + ' pts';
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            riskChartInstance = new Chart(ctx, config);
+        }
+
+        // 2. Dynamic UI Update Logic
+        function updateDashboardState(state) {
+            AppState.currentView = state;
+            
+            // Update Toggle Buttons
+            const btnCurrent = document.getElementById('btn-current');
+            const btnProposed = document.getElementById('btn-proposed');
+            
+            if (state === 'current') {
+                btnCurrent.className = "toggle-btn toggle-active-current px-6 py-3 text-sm font-medium border rounded-l-lg focus:z-10 focus:ring-2 focus:ring-slate-500";
+                btnProposed.className = "toggle-btn toggle-inactive px-6 py-3 text-sm font-medium border-t border-b border-r rounded-r-lg focus:z-10 focus:ring-2 focus:ring-slate-500";
+                document.getElementById('flow-title').textContent = "Current Manual Process";
+                document.getElementById('flow-title').className = "text-xl font-bold text-red-600 text-center mb-6";
+            } else {
+                btnCurrent.className = "toggle-btn toggle-inactive px-6 py-3 text-sm font-medium border rounded-l-lg focus:z-10 focus:ring-2 focus:ring-slate-500";
+                btnProposed.className = "toggle-btn toggle-active-proposed px-6 py-3 text-sm font-medium border-t border-b border-r rounded-r-lg focus:z-10 focus:ring-2 focus:ring-slate-500";
+                document.getElementById('flow-title').textContent = "Proposed Enterprise Pipeline";
+                document.getElementById('flow-title').className = "text-xl font-bold text-emerald-600 text-center mb-6";
+            }
+
+            // Update Description Text
+            document.getElementById('flow-description').textContent = AppState.textContent[state];
+            
+            // Change description box color based on state
+            const descBox = document.getElementById('flow-description').parentElement;
+            if(state === 'current') {
+                descBox.className = "bg-red-50 border-l-4 border-red-400 p-4 rounded-r mt-4";
+                document.getElementById('flow-description').className = "text-sm text-red-800";
+            } else {
+                descBox.className = "bg-emerald-50 border-l-4 border-emerald-400 p-4 rounded-r mt-4";
+                document.getElementById('flow-description').className = "text-sm text-emerald-800";
+            }
+
+            // Render HTML Flow Diagram
+            renderFlowDiagram(state);
+
+            // Update Chart Data dynamically
+            riskChartInstance.data.datasets = [ AppState.chartData.datasets[state] ];
+            riskChartInstance.update();
+        }
+
+        // 3. Flow Diagram Renderer (HTML/CSS Based, NO SVG/Mermaid)
+        function renderFlowDiagram(state) {
+            const container = document.getElementById('diagram-container');
+            container.innerHTML = ''; // Clear existing
+            
+            const nodes = AppState.flowData[state];
+            
+            nodes.forEach((node, index) => {
+                // Create Node Element
+                const nodeEl = document.createElement('div');
+                nodeEl.className = `process-node flex flex-col items-center justify-center p-4 rounded-xl text-center w-32 md:w-40 z-10 ${node.color}`;
+                nodeEl.innerHTML = `
+                    <span class="text-3xl mb-2">${node.icon}</span>
+                    <h4 class="font-bold text-sm leading-tight">${node.title}</h4>
+                    <p class="text-xs mt-1 opacity-80 leading-tight">${node.desc}</p>
+                `;
+                container.appendChild(nodeEl);
+
+                // Create Connector Arrow (if not the last node)
+                if (index < nodes.length - 1) {
+                    const arrowEl = document.createElement('div');
+                    arrowEl.className = 'connector-arrow flex-grow text-center';
+                    arrowEl.innerHTML = '&#x2794;'; // Heavy Right-Pointing Arrow
+                    container.appendChild(arrowEl);
+                }
+            });
+        }
+
+        // 4. Functional Sub-navigation / Accordion for Resources
+        function toggleDetails(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // --- Event Listeners & Bootstrapping ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup Event Listeners for Toggles
+            document.getElementById('btn-current').addEventListener('click', () => updateDashboardState('current'));
+            document.getElementById('btn-proposed').addEventListener('click', () => updateDashboardState('proposed'));
+            
+            // Initialize Viz
+            initChart();
+            renderFlowDiagram('current'); // Load default state
+        });
+
+    </script>
+</body>
+</html>
