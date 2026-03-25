@@ -1,0 +1,26 @@
+# Site settings
+theme: jekyll-theme-minimal
+title: TJ Smith''s Pages
+description: A placeholder for files and stuff
+email: tjsmith@switchboxinc.com
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+permalink: /:year/:title/
+
+# Build settings
+theme: jekyll-theme-minimal # Or any other GitHub-supported theme
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Exclude from processing.
+# The following items will not be processed, by default.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
