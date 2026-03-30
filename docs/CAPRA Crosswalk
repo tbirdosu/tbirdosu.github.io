@@ -1,0 +1,906 @@
+import { useState, useMemo } from "react";
+
+const standards = [
+  {
+    ch: 1, new: "1.1", newTitle: "Mission, Vision, and Values", fundamental: true,
+    old: "1.4, 1.5", oldTitles: "Mission; Vision", changeType: "MERGED",
+    notes: "Combined mission (1.4) and vision (1.5); adds Values component",
+    rubric: [
+      "Did the agency provide mission, vision, and values statements properly approved by the appropriate approving authority?",
+      "Does the narrative describe how these statements aligned with the Agency's purpose or authority?",
+      "Was the mission, vision, and values communicated with staff?",
+      "Are these statements posted on agency website in view of public?",
+      "Is the mission, vision, and values embedded in the culture and work of the agency?"
+    ]
+  },
+  {
+    ch: 1, new: "1.2", newTitle: "Strategic Plan", fundamental: true,
+    old: "2.5", oldTitles: "Strategic Plan", changeType: "1:1",
+    notes: "Direct carry-over; now in Ch. 1",
+    rubric: [
+      "Did the agency provide an approved strategic plan within the last five years?",
+      "Did the narrative demonstrate how the agency's mission, vision, and values align with the overarching organization's strategic goals and planning documents?",
+      "Has the agency provided evidence of an annual review?"
+    ]
+  },
+  {
+    ch: 1, new: "1.3", newTitle: "Community Involvement in Agency Strategic Planning", fundamental: true,
+    old: "2.9", oldTitles: "Community Involvement", changeType: "EXPANDED",
+    notes: "Narrowed focus to strategic planning context",
+    rubric: [
+      "Was the Agency's strategic plan developed following outreach to and engagement with a wide variety of community members that are representative of the entire community's demographics?",
+      "Did the agency share examples of community outreach or engagement they conducted (like surveys, focus groups or public meetings)?",
+      "Does the narrative describe how the strategic plan will support community needs?",
+      "Does the agency describe how the strategic plan connects to the master plan?"
+    ]
+  },
+  {
+    ch: 1, new: "1.4", newTitle: "Personnel Involvement in Agency Strategic Planning", fundamental: true,
+    old: "1.4.2", oldTitles: "Personnel Involvement", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; focused on strategic planning",
+    rubric: [
+      "Did the agency's strategic plan include outreach/input with the staff?",
+      "Did the staff outreach represent multiple levels and accessible within the organization?",
+      "Was the input received used to inform strategic planning goals and objectives?"
+    ]
+  },
+  {
+    ch: 2, new: "2.1", newTitle: "Advisory Boards and Commissions", fundamental: true,
+    old: "1.1.2", oldTitles: "Citizen Advisory Boards/Committees", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard 1.1.2",
+    rubric: [
+      "Has the agency provided a list of public boards, commissions, and/or committees?",
+      "Has the agency demonstrated how input from boards, commissions, and/or committees has been used to inform decision-making related to policy-setting, service delivery adjustments, or other operational changes to the organization?"
+    ]
+  },
+  {
+    ch: 2, new: "2.2", newTitle: "Agency Relationships", fundamental: false,
+    old: "1.7, 1.7.1", oldTitles: "Agency Relationships; Operational Coordination Agreements", changeType: "MERGED",
+    notes: "Merged two related standards into one",
+    rubric: [
+      "Has the agency provided a matrix of 3 ongoing cooperative projects (based on the Evidence of Compliance) with specific staff assigned as liaisons that are providing assistance in fulfillment of the agency's mission and its measurable performance objectives?"
+    ]
+  },
+  {
+    ch: 2, new: "2.3", newTitle: "Technological Resources", fundamental: false,
+    old: "3.5, 3.5.1", oldTitles: "Utilization of Technology; Management Information Systems", changeType: "MERGED",
+    notes: "Merged technology standards; MIS folded in",
+    rubric: [
+      "Did the agency provide a matrix (based on the Evidence of Compliance) with all of the required information?",
+      "Has the agency demonstrated how the technology available to the agency is used in furtherance of its mission?"
+    ]
+  },
+  {
+    ch: 2, new: "2.4", newTitle: "Records Management", fundamental: false,
+    old: "3.6, 3.6.1", oldTitles: "Records Management Policy; Records Disaster Mitigation", changeType: "MERGED",
+    notes: "Merged two records standards into one",
+    rubric: [
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Records Management activities showing they are qualified to perform these duties?",
+      "Did the agency provide policy and procedures?",
+      "Did the agency provide the public records request process?",
+      "Was a process or strategy for protecting records from loss provided?",
+      "Did the agency describe how they plan to recover records in the event of a disaster?"
+    ]
+  },
+  {
+    ch: 2, new: "2.5", newTitle: "Adaptive Programs / ADA Services Accessibility Compliance", fundamental: true,
+    old: "2.10", oldTitles: "ADA Transition Plan", changeType: "EXPANDED",
+    notes: "Significantly expanded; now includes adaptive programming, website accessibility, complaint process",
+    rubric: [
+      "Did the agency provide the ADA policies and procedures?",
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for ADA activities showing they are qualified to perform these duties?",
+      "Is the agency's website accessible?",
+      "Did the agency provide an ADA Transition Plan?",
+      "Has the agency demonstrated that the Transition Plan is regularly reviewed, and progress made to reduce barriers to access is documented?",
+      "Is there evidence that the agency is providing adaptive programs or is cooperating with other entity(ies) to provide such programming?",
+      "Did the agency provide evidence that ADA notices are posted and available to the public outlining the complaint process?",
+      "If a complaint has been received, has the agency demonstrated that it followed policies and procedures to find resolution?"
+    ]
+  },
+  {
+    ch: 2, new: "2.6", newTitle: "Continuity of Operations", fundamental: false,
+    old: "(NEW)", oldTitles: "—", changeType: "NEW",
+    notes: "New standard with no direct predecessor in 154-standard set",
+    rubric: [
+      "Did the agency provide a COOP with all key elements included (based on the Evidence of Compliance)?",
+      "Did the agency provide the date of acceptance of the COOP and date of last review?"
+    ]
+  },
+  {
+    ch: 3, new: "3.1", newTitle: "Community and Park Planning Strategy", fundamental: true,
+    old: "2.1", oldTitles: "Overall Planning Function within Agency", changeType: "EXPANDED",
+    notes: "Expanded to emphasize strategy and mission alignment",
+    rubric: [
+      "Did the agency describe their overall community and park planning strategy?",
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Community and Park Planning activities showing they are qualified to perform these duties?",
+      "Has the agency demonstrated that local planning and community development support the mission, vision and strategic plan of the agency?"
+    ]
+  },
+  {
+    ch: 3, new: "3.2", newTitle: "Planning with Regional, State and Federal Agencies", fundamental: false,
+    old: "2.3", oldTitles: "Planning with Regional, State, and Federal Agencies", changeType: "1:1",
+    notes: "Direct carry-over",
+    rubric: [
+      "Has the agency demonstrated that assigned community and park planning staff have a role in community and park planning activities that are conducted in cooperation with regional, state, and/or federal agencies?",
+      "Does this cooperation/involvement result in actions that support the mission, vision, and strategic plan objectives?"
+    ]
+  },
+  {
+    ch: 3, new: "3.3", newTitle: "Parks and Recreation System Master Plan", fundamental: true,
+    old: "2.4", oldTitles: "Park and Recreation System Master Plan", changeType: "1:1",
+    notes: "Streamlined; references to sub-standards removed",
+    rubric: [
+      "Did the agency provide a Parks and Recreation System Master Plan that was reviewed periodically (within last 5 years) that includes all required elements listed in the Evidence of Compliance?",
+      "Has the agency demonstrated that the Master Plan is a designed set of progressive steps showing the strategy from existing conditions to desired conditions?",
+      "Are the Master Plan's findings and recommendations in alignment with the mission, vision and strategic plan?",
+      "Did the agency receive feedback from both users and non-users to achieve a community-wide plan?",
+      "Has the agency demonstrated that community input collected was used to inform planning objectives?",
+      "Did the agency demonstrate evidence of initial or updated adoption?"
+    ]
+  },
+  {
+    ch: 3, new: "3.4", newTitle: "Feasibility Studies", fundamental: false,
+    old: "2.6", oldTitles: "Feasibility Studies", changeType: "1:1",
+    notes: "Direct carry-over",
+    rubric: [
+      "Did the agency provide at least one example of a feasibility study used to inform decisions made related to a planned project?",
+      "Did the agency describe how a recent study was used to inform decisions?"
+    ]
+  },
+  {
+    ch: 3, new: "3.5", newTitle: "Site Plans", fundamental: false,
+    old: "2.7", oldTitles: "Site Plans", changeType: "EXPANDED",
+    notes: "Now requires community input narrative and alignment with Master Plan",
+    rubric: [
+      "Did the agency provide a representative sampling of 2 or more facility site plans guiding the development of parks in the agency's park system?",
+      "Did the agency describe how a recent site plan was developed using community input from residents living within the service area?",
+      "Has the agency demonstrated that the site plan is in alignment with Park Master Plan objectives and community input?"
+    ]
+  },
+  {
+    ch: 3, new: "3.6", newTitle: "Sustainability and Environmental Resilience Strategy", fundamental: false,
+    old: "(NEW / partial 7.9.1)", oldTitles: "Recycling and/or Zero Waste Plan (partial)", changeType: "NEW",
+    notes: "New broad standard; replaces narrow recycling sub-standard with comprehensive sustainability strategy",
+    rubric: [
+      "Has the agency demonstrated that it has established strategies and/or practices related to sustainability and environmental resilience goals?",
+      "Did the agency demonstrate how these have been shared with the public?",
+      "Did the agency demonstrate how these address resilience equitably?",
+      "Did the agency demonstrate how these were evaluated?"
+    ]
+  },
+  {
+    ch: 4, new: "4.1", newTitle: "Human Resource Planning, Workforce Development, and Culture", fundamental: true,
+    old: "(NEW umbrella)", oldTitles: "—", changeType: "NEW",
+    notes: "New umbrella standard; no direct predecessor",
+    rubric: [
+      "Did the agency explain their human resource planning strategy?",
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Human Resources activities showing they are qualified to perform these duties?",
+      "Did the agency provide evidence of collected and analyzed data that has informed decisions made related to human resources planning, workforce composition, professional development, and/or organizational culture?"
+    ]
+  },
+  {
+    ch: 4, new: "4.2", newTitle: "Personnel Policies and Procedures Manual", fundamental: true,
+    old: "4.1, 4.1.1, 4.1.1.1, 4.1.3", oldTitles: "Personnel Policies Manual; Code of Ethics; Gifts & Gratuities; Equal Opportunity/Diversity", changeType: "MERGED",
+    notes: "Consolidated 4 standards into one; diversity, ethics, and gratuities policy now embedded",
+    rubric: [
+      "Did the agency provide a Personnel Policies and Procedures Manual that includes all the required elements listed in the Evidence of Compliance?",
+      "If the agency has made changes to the manual since the last accreditation review, has the agency provided a narrative describing those changes?"
+    ]
+  },
+  {
+    ch: 4, new: "4.3", newTitle: "Compensation Plan", fundamental: false,
+    old: "4.1.8", oldTitles: "Compensation Plan", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard",
+    rubric: [
+      "Did the agency provide evidence that a compensation plan has been established that provides fair compensation among units within the agency?",
+      "Has the plan been periodically reviewed?"
+    ]
+  },
+  {
+    ch: 4, new: "4.4", newTitle: "Employee Performance Evaluation and Supervision", fundamental: false,
+    old: "4.4", oldTitles: "Employee Performance Evaluation", changeType: "1:1",
+    notes: "Direct carry-over with modernized language",
+    rubric: [
+      "Did the agency provide policy and procedures outlining the systematic performance evaluation system?",
+      "Has the agency demonstrated that the evaluation system is aligned with the agency's mission, vision, values, and strategic plan?",
+      "Did the agency provide evidence of implementation and communication with employees?",
+      "If unionized, has the agency provided information related to the agreed upon performance evaluation system that applies to covered employees?"
+    ]
+  },
+  {
+    ch: 4, new: "4.5", newTitle: "Onboarding Processes (Orientation and Training)", fundamental: false,
+    old: "4.5", oldTitles: "Employee Orientation", changeType: "EXPANDED",
+    notes: "Expanded to full onboarding experience beyond initial orientation",
+    rubric: [
+      "Did the agency provide an outline of the onboarding/orientation program is in place and utilized?",
+      "Did the agency provide representative example of materials distributed?",
+      "Does the implemented onboarding program extend beyond the initial orientation?",
+      "Has the agency demonstrated that it evaluates its onboarding program?"
+    ]
+  },
+  {
+    ch: 4, new: "4.6", newTitle: "Employee Development and Training Program", fundamental: false,
+    old: "4.6.1", oldTitles: "Employee Training and Development Program", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; adds succession planning emphasis",
+    rubric: [
+      "Did the agency describe the goals of the employee development and training program?",
+      "Did the agency provide the scope and components of the program, including both mandatory and optional training?",
+      "Are training opportunities and a sampling of participant lists provided as evidence of ongoing implementation? Sampling requirements are based on initial (evidence within the previous 1 year) or reaccreditation (evidence within the previous 5 years).",
+      "Has the agency demonstrated that its program offers development opportunities for employees in multiple levels of the organization's structure?",
+      "Has the agency demonstrated that the program supports leadership succession and certification objectives?"
+    ]
+  },
+  {
+    ch: 4, new: "4.7", newTitle: "Professional Certification and Organization Membership", fundamental: false,
+    old: "4.6.2", oldTitles: "Professional Certification", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; expanded to include org membership",
+    rubric: [
+      "Did the agency provide a comprehensive list of staff that includes their professional credentials and participation in professional development and association activities?",
+      "Did the agency describe how opportunities are provided to a variety of levels of staff for professional certification and participation in organization memberships?"
+    ]
+  },
+  {
+    ch: 4, new: "4.8", newTitle: "Workforce Health and Wellness Program", fundamental: false,
+    old: "4.7", oldTitles: "Workforce Health and Wellness Program", changeType: "1:1",
+    notes: "Direct carry-over; evaluation requirement retained",
+    rubric: [
+      "Did the agency provide evidence of a workforce health and wellness program?",
+      "Has the program been evaluated?",
+      "Did the agency describe how the program has goals and objectives?",
+      "Did the agency describe how results of the evaluation informed changes (or no changes) to the program?"
+    ]
+  },
+  {
+    ch: 4, new: "4.9", newTitle: "Volunteer Management", fundamental: false,
+    old: "4.9", oldTitles: "Volunteer Management", changeType: "1:1",
+    notes: "Direct carry-over; background check and evaluation requirements retained",
+    rubric: [
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Volunteer Management activities showing they are qualified to perform these duties?",
+      "Did the agency describe the goals and objectives for its volunteer program?",
+      "Did the agency provide a volunteer manual that includes all required elements listed in the Evidence of Compliance?",
+      "Did the agency provide recent evaluation of the volunteer program?",
+      "Did the agency describe how the results of the evaluation were reviewed to better meet volunteer program goals and objectives?",
+      "Did the agency provide evidence that background check procedures are in place and agency staff administer background checks in compliance with policy?",
+      "If unionized, has the agency demonstrated how volunteer responsibilities are distinguished from unionized roles?"
+    ]
+  },
+  {
+    ch: 5, new: "5.1", newTitle: "Financial Management, Responsibility and Accountability", fundamental: true,
+    old: "(NEW umbrella)", oldTitles: "—", changeType: "NEW",
+    notes: "New accountability umbrella; no direct predecessor",
+    rubric: [
+      "Did the agency provide a narrative that describes its overall financial strategy?",
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Financial Management activities showing they are qualified to perform these duties?",
+      "Did the agency explain how fairness and accessibility principles are incorporated into their financial strategies?"
+    ]
+  },
+  {
+    ch: 5, new: "5.2", newTitle: "Legal Authority and Fiscal Policy", fundamental: true,
+    old: "5.1", oldTitles: "Fiscal Policy", changeType: "EXPANDED",
+    notes: "Title expanded to include Legal Authority",
+    rubric: [
+      "Did the agency provide a narrative that explains how its legal fiscal authority is established (e.g. charter, ordinance enabling legislation)?",
+      "Was a summary of fiscal policies requested in the Evidence of Compliance provided?",
+      "Did the agency describe how fiscal policies are shared with new members of the approving authority and staff?",
+      "Did the agency provide evidence verifying that policies and procedures are in place and being followed?"
+    ]
+  },
+  {
+    ch: 5, new: "5.3", newTitle: "Comprehensive Revenue Policy", fundamental: true,
+    old: "5.1.1", oldTitles: "Comprehensive Revenue Policy", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; now includes scholarship policy",
+    rubric: [
+      "Did the agency provide policy and/or directing documents on fees and charges, the current fee schedules or cost-recovery procedures?",
+      "Did the agency provide evidence of the most recent review or update of fees and charges?",
+      "Did the agency demonstrate that the cost recovery policy is being implemented based on approving authority direction?",
+      "Did the agency provide procedures for resource allocation strategy?",
+      "If applicable, did the agency provide its scholarship or financial assistance policy?"
+    ]
+  },
+  {
+    ch: 5, new: "5.4", newTitle: "Grants and Alternative Funding Strategies", fundamental: false,
+    old: "5.1.3", oldTitles: "Alternative Sources of Funding", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; expanded to include private/nonprofit grants policy",
+    rubric: [
+      "Did the agency provide a policy and/or procedure that outlines how grants and alternative funding sources are managed and reported?",
+      "Did the agency provide a policy for solicitation and management of private, corporate and nonprofit support?",
+      "Has the agency demonstrated a process for reviewing and considering grant and alternative funding opportunities that supports the priorities of the agency?"
+    ]
+  },
+  {
+    ch: 5, new: "5.5", newTitle: "Financial Statements", fundamental: true,
+    old: "5.3, 5.3.1, 5.3.2", oldTitles: "Accounting System; Financial Statements; Management of Accounts", changeType: "MERGED",
+    notes: "Consolidated 3 accounting/statements standards into one",
+    rubric: [
+      "Did the agency describe how financial statements and/or reports are available for review?",
+      "Did the agency describe how financial reporting supports informed decision-making throughout the fiscal year?"
+    ]
+  },
+  {
+    ch: 5, new: "5.6", newTitle: "Purchasing Policy", fundamental: true,
+    old: "5.2.2", oldTitles: "Purchasing Procedures", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; adds staff training component",
+    rubric: [
+      "Did the agency provide its purchasing policy and/or procedures?",
+      "Did the narrative outline opportunities for staff to learn and train for procurement policies and procedures?"
+    ]
+  },
+  {
+    ch: 5, new: "5.7", newTitle: "Independent Audit", fundamental: true,
+    old: "5.3.4", oldTitles: "Independent Audit", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; now includes management letter response",
+    rubric: [
+      "Did the agency provide the most recent Annual Comprehensive Financial Report and/or Audit available for review?",
+      "Did the agency provide the response to the audit recommendations?",
+      "If applicable, did the agency describe any adjustments made in response to recommendations?"
+    ]
+  },
+  {
+    ch: 5, new: "5.8", newTitle: "Annual or Biennial Budget", fundamental: true,
+    old: "5.4", oldTitles: "Annual or Biennial Budget", changeType: "1:1",
+    notes: "Direct carry-over; community/staff participation now explicit",
+    rubric: [
+      "Did the agency provide evidence that demonstrates alignment of the budget with strategic priorities (e.g. budget message or transmittal letter describing the connection between agency priorities and budgetary investment)?",
+      "Did the agency provide evidence of public and staff participation in the budget preparation process?"
+    ]
+  },
+  {
+    ch: 5, new: "5.9", newTitle: "Supplemental/Emergency Appropriations", fundamental: false,
+    old: "5.4.2", oldTitles: "Emergency Appropriations", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard",
+    rubric: [
+      "If applicable, did the agency provide a recent example of a supplemental or emergency appropriation and the steps followed to approve it?",
+      "Did the agency provide documentation of an approved process or policy for emergency appropriations to follow when necessary?"
+    ]
+  },
+  {
+    ch: 5, new: "5.10", newTitle: "Capital Asset Management", fundamental: true,
+    old: "5.4.3", oldTitles: "Capital Improvement Program", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; now requires depreciation/replacement schedule",
+    rubric: [
+      "Did the agency provide a capital asset depreciation and replacement schedule?",
+      "Did the agency provide the replacement schedule that includes forecasted future expenditures to sufficiently fund future replacements?"
+    ]
+  },
+  {
+    ch: 6, new: "6.1", newTitle: "Recreation Program Responsibility and Accountability", fundamental: true,
+    old: "(NEW umbrella)", oldTitles: "—", changeType: "NEW",
+    notes: "New accountability umbrella for programming; no direct predecessor",
+    rubric: [
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Recreation Program activities showing they are qualified to perform these duties?"
+    ]
+  },
+  {
+    ch: 6, new: "6.2", newTitle: "Program and Service Determinants (Components)", fundamental: true,
+    old: "6.2, 6.3, 6.3.1", oldTitles: "Program Objectives; Program and Service Determinants; Outreach to Diverse/Underserved Populations", changeType: "MERGED",
+    notes: "Consolidated 3 standards; determinants framework retained; diversity outreach embedded",
+    rubric: [
+      "Did the agency provide evidence of staff training on the six program and service determinants?",
+      "Did the agency provide a matrix/spreadsheet answering the items identified in 1, 2, 3, 5 and 6?",
+      "Did the agency provide evaluations from at least 5 programs from a variety of program areas and how the evaluations impacted decision-making?"
+    ]
+  },
+  {
+    ch: 6, new: "6.3", newTitle: "Recreation Program Plan (RPP)", fundamental: true,
+    old: "6.1", oldTitles: "Recreation Programming Plan", changeType: "1:1",
+    notes: "Direct carry-over; SMART objectives and lifecycle management now explicit",
+    rubric: [
+      "Did the agency provide a complete RPP (based on the Evidence of Compliance)?"
+    ]
+  },
+  {
+    ch: 6, new: "6.4", newTitle: "Program Evaluation – Staff Training & Use in Informing Decision Making", fundamental: true,
+    old: "6.5, 6.5.1", oldTitles: "Program Evaluation; Outcome Assessment", changeType: "MERGED",
+    notes: "Merged evaluation standards; staff training requirement added",
+    rubric: [
+      "Did the agency provide recent evaluation trainings based on the Evidence of Compliance?",
+      "Did the agency provide evidence that programs are making progress toward desired outcomes?",
+      "Does the agency make programming decisions based on evaluation results?"
+    ]
+  },
+  {
+    ch: 6, new: "6.5", newTitle: "Cooperative Recreation Programming", fundamental: false,
+    old: "6.6", oldTitles: "Cooperative Programming", changeType: "1:1",
+    notes: "Direct carry-over",
+    rubric: [
+      "Did the agency provide examples of cooperative programming services?"
+    ]
+  },
+  {
+    ch: 6, new: "6.6", newTitle: "Piloting New Programs and Services", fundamental: false,
+    old: "(NEW)", oldTitles: "—", changeType: "NEW",
+    notes: "New standard; no direct predecessor",
+    rubric: [
+      "Did the agency provide evidence of pilot programs?",
+      "Did the agency describe the evaluation process, results and any decision-making from the pilot programs?"
+    ]
+  },
+  {
+    ch: 7, new: "7.1", newTitle: "Facility and Land Use Responsibility and Accountability", fundamental: true,
+    old: "(NEW umbrella)", oldTitles: "—", changeType: "NEW",
+    notes: "New accountability umbrella for facilities; no direct predecessor",
+    rubric: [
+      "Did the agency describe the overall facility and land use management strategy?",
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Facilities and Land Use Management activities showing they are qualified to perform these duties?"
+    ]
+  },
+  {
+    ch: 7, new: "7.2", newTitle: "Park and Recreation Land Acquisition and Disposal", fundamental: true,
+    old: "7.1", oldTitles: "Parkland Acquisition Procedures", changeType: "EXPANDED",
+    notes: "Expanded to include disposal; policy narrative requirement added",
+    rubric: [
+      "Did the agency provide a policy that governs the procedures of acquisition or disposal of parkland?",
+      "Did the agency provide a policy that includes citation of legal authority over final decision making?",
+      "Did the agency describe how potential acquisitions tie into the master plan and strategic objectives, including any requirements for public engagement opportunities, bidding, etc.?",
+      "Did the agency provide documentation from the last acquisition, if within the last 10 years?"
+    ]
+  },
+  {
+    ch: 7, new: "7.3", newTitle: "Park and Recreation Property Development", fundamental: true,
+    old: "7.2", oldTitles: "Area and Facilities Development Policies and Procedures", changeType: "1:1",
+    notes: "Direct carry-over; now requires evidence of most recent project compliance",
+    rubric: [
+      "Did the agency provide a policy that governs the procedures followed to plan and develop parkland, including citation of legal authority over final decision making?",
+      "Did the agency describe how the agency develops lands and facilities in conformance with the Park Master Plan and strategic objectives, including any requirements for public engagement opportunities, bidding, post-acquisition, etc.?",
+      "Did the agency provide evidence that the most recent development project complied with these policies and procedures?"
+    ]
+  },
+  {
+    ch: 7, new: "7.4", newTitle: "Maintenance and Operations Management", fundamental: true,
+    old: "7.5", oldTitles: "Maintenance and Operations Management Standards", changeType: "1:1",
+    notes: "Direct carry-over; classification by intensity of use retained",
+    rubric: [
+      "Did the agency provide the established maintenance standards (based on the Evidence of Compliance)?",
+      "Did the agency provide the most recent review or update of the maintenance standards and was it within the past 5 years?",
+      "Did the agency describe how they are implementing the plan?"
+    ]
+  },
+  {
+    ch: 7, new: "7.5", newTitle: "Preventative Maintenance Plan", fundamental: false,
+    old: "7.5.2", oldTitles: "Preventative Maintenance", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; now requires inspection evidence for 3 facilities",
+    rubric: [
+      "Did the agency provide the preventative maintenance plan(s) and procedures, including examples, as outlined in the Evidence of Compliance?",
+      "Did the agency provide completed inspections and safety checks for a minimum of 3 separate facilities/areas?",
+      "Did the agency demonstrate how the results of the inspections are used in decision making?"
+    ]
+  },
+  {
+    ch: 7, new: "7.6", newTitle: "Fleet Management Plan", fundamental: false,
+    old: "7.6", oldTitles: "Fleet Management", changeType: "1:1",
+    notes: "Direct carry-over",
+    rubric: [
+      "Did the agency provide the Fleet Management Plan?",
+      "Did the agency provide evidence of implementation of the plan?"
+    ]
+  },
+  {
+    ch: 7, new: "7.7", newTitle: "Natural Resource Management", fundamental: false,
+    old: "7.8", oldTitles: "Natural Resource Management Plan", changeType: "EXPANDED",
+    notes: "Direct carry-over; community outreach/education now required",
+    rubric: [
+      "Did the agency provide the Natural Resource Management Plan and procedures?",
+      "Did the agency provide examples of outreach and education to the community on how they protect natural resources?"
+    ]
+  },
+  {
+    ch: 8, new: "8.1", newTitle: "Risk Management Responsibility and Strategy", fundamental: true,
+    old: "9.1, 9.1.1", oldTitles: "Risk Management Policy; Risk Management Plan and Procedures", changeType: "MERGED",
+    notes: "Merged risk policy + plan; moved from Ch. 9 to Ch. 8",
+    rubric: [
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Risk Management activities showing they are qualified to perform these duties?",
+      "Did the agency describe how risks are identified, assessed and managed?",
+      "Did the agency provide the risk assessment data report?",
+      "If changes were made, did the agency provide evidence of changes to policy, procedure or practice as a result of risk management process?"
+    ]
+  },
+  {
+    ch: 8, new: "8.2", newTitle: "Codes, Laws, Ordinances, Policies, and/or Rules", fundamental: true,
+    old: "8.1", oldTitles: "Codes, Laws, and Ordinances", changeType: "1:1",
+    notes: "Direct carry-over; now explicit about patron availability",
+    rubric: [
+      "Did the agency provide documentation of codes, laws, and ordinances that apply to areas and facilities?",
+      "Did the agency describe how the codes, laws and ordinances are readily available to park patrons?"
+    ]
+  },
+  {
+    ch: 8, new: "8.3", newTitle: "General Security Plan", fundamental: true,
+    old: "8.5", oldTitles: "General Security Plan", changeType: "1:1",
+    notes: "Direct carry-over; staff training narrative added",
+    rubric: [
+      "Did the agency provide a general security plan (based on the Evidence of Compliance)?",
+      "Did the agency describe how employees are trained on the general security plan?"
+    ]
+  },
+  {
+    ch: 8, new: "8.4", newTitle: "Personnel Safety Training", fundamental: true,
+    old: "8.5.3", oldTitles: "Personnel Safety Training", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard",
+    rubric: [
+      "Did the agency provide evidence of personnel safety trainings to all levels within the organization?"
+    ]
+  },
+  {
+    ch: 8, new: "8.5", newTitle: "Disruptive Behavior", fundamental: false,
+    old: "8.5.2", oldTitles: "Disruptive Behavior Policy", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; law enforcement relationship narrative added",
+    rubric: [
+      "Did the agency provide the procedure for handling disruptive behavior?",
+      "Did the agency describe the relationship and roles with law enforcement?"
+    ]
+  },
+  {
+    ch: 8, new: "8.6", newTitle: "Event Planning and Management", fundamental: false,
+    old: "8.5.4", oldTitles: "Event and Tournament Management", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard",
+    rubric: [
+      "Did the agency demonstrate examples of coordination with outside departments and/or agencies as discussed in the Evidence of Compliance?"
+    ]
+  },
+  {
+    ch: 8, new: "8.7", newTitle: "Accidents/Incidents", fundamental: true,
+    old: "9.2", oldTitles: "Incident Reports", changeType: "EXPANDED",
+    notes: "Moved from Ch. 9; now requires 5-year history for reaccreditation",
+    rubric: [
+      "Did the agency provide three accident/incident reports per year (If seeking initial accreditation, over 1 year. If seeking reaccreditation, over 5 years.)?",
+      "Did the agency describe at least three examples of data-informed decision-making to reduce risk after an incident or accident?"
+    ]
+  },
+  {
+    ch: 8, new: "8.8", newTitle: "Emergency Management Plan", fundamental: true,
+    old: "8.6, 8.6.1", oldTitles: "Emergency Action Plan; Local Emergency Plan", changeType: "MERGED",
+    notes: "Merged emergency plan standards; annual training evidence now required",
+    rubric: [
+      "Did the agency provide emergency management plan or the emergency management plan table of content (if the plan is not available for public review)?",
+      "Did the agency provide documentation of emergency management plan annual training (based on the Evidence of Compliance)?"
+    ]
+  },
+  {
+    ch: 8, new: "8.9", newTitle: "Crisis Response Management", fundamental: false,
+    old: "8.6.3 / 9.3", oldTitles: "Crisis Management elements", changeType: "EXPANDED",
+    notes: "Combined crisis response and communication elements",
+    rubric: [
+      "Did the agency provide evidence of crisis management strategies (based on the Evidence of Compliance)?"
+    ]
+  },
+  {
+    ch: 9, new: "9.1", newTitle: "Marketing, Communications, and Community Engagement Responsibility", fundamental: false,
+    old: "3.4.1, 3.4.3.1", oldTitles: "Public Information Responsibility; Marketing Responsibility", changeType: "MERGED",
+    notes: "Merged two responsibility standards; now includes community engagement function",
+    rubric: [
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Marketing, Communications and Community Engagement activities showing they are qualified to perform these duties?",
+      "Did the agency describe the marketing and communications strategy?",
+      "Did the agency describe efforts to ensure community representation in marketing campaigns?"
+    ]
+  },
+  {
+    ch: 9, new: "9.2", newTitle: "External Marketing and Communications", fundamental: true,
+    old: "3.4.3, 3.4.3.2", oldTitles: "Marketing Plan; Social Media Policy", changeType: "MERGED",
+    notes: "Consolidated marketing plan and social media policy into outcome-based standard",
+    rubric: [
+      "Did the agency provide evidence of established data collection, analysis, and decision-making process that extends external communication efforts to the community?",
+      "If applicable, did the agency describe the relationship with the media?"
+    ]
+  },
+  {
+    ch: 9, new: "9.3", newTitle: "Internal Communications", fundamental: false,
+    old: "3.3", oldTitles: "Internal Communication", changeType: "EXPANDED",
+    notes: "Direct carry-over; evaluation and improvement cycle now explicit",
+    rubric: [
+      "Did the agency provide a communication matrix on how internal communications are managed?",
+      "Was the most recent evaluation of internal communications provided?",
+      "Did the agency provide evidence of changes made to communications strategies in response to evaluation data?"
+    ]
+  },
+  {
+    ch: 9, new: "9.4", newTitle: "Communicating the Essentiality and Impact of Leisure Programs (Advocacy)", fundamental: false,
+    old: "6.4", oldTitles: "Community Education for Leisure Process", changeType: "EXPANDED",
+    notes: "Moved from Ch. 6; advocacy and elected official education now emphasized",
+    rubric: [
+      "Did the agency provide evidence of methods utilized by the agency to educate and inform the community and/or elected officials on the benefits, values, outcomes and impacts of leisure and recreation services?",
+      "Did the agency provide the last review of these efforts?"
+    ]
+  },
+  {
+    ch: 9, new: "9.5", newTitle: "Community Engagement", fundamental: true,
+    old: "3.4.2", oldTitles: "Community Relations Plan", changeType: "EXPANDED",
+    notes: "Renamed and expanded; goes beyond plan to active engagement strategies",
+    rubric: [
+      "Did the agency describe community engagement strategies (based on the Evidence of Compliance)?",
+      "Did the agency describe how engagement is adjusted based on the specific communities being reached?"
+    ]
+  },
+  {
+    ch: 9, new: "9.6", newTitle: "Crisis Communications", fundamental: true,
+    old: "8.6.2", oldTitles: "Emergency Risk Communications Plan and Procedures", changeType: "EXPANDED",
+    notes: "Moved from Ch. 8 to Ch. 9; now requires templates and timeline",
+    rubric: [
+      "Did the agency provide strategies, procedures and/or protocols for crisis communication (internal and external)?",
+      "Did the agency provide evidence of staff training on the crisis communication strategies?",
+      "Did the agency provide three communication templates and a timeline outlining how and when communication is delivered during various phases of a crisis?"
+    ]
+  },
+  {
+    ch: 10, new: "10.1", newTitle: "Evaluation, Assessment, and Research Responsibility", fundamental: false,
+    old: "(NEW umbrella)", oldTitles: "—", changeType: "NEW",
+    notes: "New accountability umbrella; no direct predecessor",
+    rubric: [
+      "Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Evaluation, Assessment, and Research activities showing they are qualified to perform these duties?",
+      "Did the agency provide examples of recent evaluation, assessment or research training (based on the Evidence of Compliance)?"
+    ]
+  },
+  {
+    ch: 10, new: "10.2", newTitle: "Systematic Data Collection", fundamental: true,
+    old: "10.4, 10.5, 10.5.2", oldTitles: "Needs Assessment; Trends Analysis; Community Inventory", changeType: "MERGED",
+    notes: "Consolidated needs assessment, trends, and inventory into one standard",
+    rubric: [
+      "Did the agency provide recent needs assessments conducted (e.g. surveys, focus groups, interviews)?",
+      "Did the agency provide documentation and examples that needs assessments are conducted on a routine basis?",
+      "Did the agency provide documentation of community demographic data and user population trends?",
+      "Did the agency provide an inventory of existing parks, facilities and services including those provided through partnerships?",
+      "Did the agency provide examples of reports or tools used to track national and local recreation trends?"
+    ]
+  },
+  {
+    ch: 10, new: "10.3", newTitle: "Systematic Data Analysis and Action", fundamental: true,
+    old: "10.1, 10.3, 10.3.1", oldTitles: "Systematic Evaluation Processes; Level of Service Analysis; LOS Standards", changeType: "MERGED",
+    notes: "Consolidated evaluation and LOS standards; NRPA Park Metrics benchmarking now explicit",
+    rubric: [
+      "Did the agency provide benchmarking comparisons of its programs, services and facilities with local community assets, using NRPA's Park Metrics when feasible?",
+      "Did the agency provide an analysis or summary identifying service gaps based on collective data and community input and document the action steps taken in response to findings?",
+      "Did the agency provide a prioritized list of improvements or investments based on gap analysis of how these trends relate to the agency and its community (at minimum every five years)?",
+      "Did the agency describe the identification of outcomes and evidence of improvements or changes in service delivery made as a result of the needs assessment and trend analysis?",
+      "Did the agency provide at least one report summarizing data collected and action taken based on results found?",
+      "Did the agency provide evidence that at least one report was presented to the approving authority or policy body?",
+      "Did the agency provide evidence of evaluation process review?"
+    ]
+  },
+  {
+    ch: 10, new: "10.4", newTitle: "Investigation and Evidence Based Decision-Making/Educational Projects", fundamental: false,
+    old: "10.5.3", oldTitles: "Research or Educational Projects", changeType: "ELEVATED",
+    notes: "Elevated from sub-standard; 5-year cycle now explicit",
+    rubric: [
+      "Did the agency provide documentation and description of a research investigation or educational project within the last five years?",
+      "Did the agency provide a report provided outlining, at minimum, the project goals, process, and outcomes?",
+      "If applicable, did the agency provide documentation of a change that resulted from the resulting project data?"
+    ]
+  }
+];
+
+const STATUS = { "": "Not Started", "gap": "Gap / Missing", "partial": "Partial", "complete": "Complete" };
+const STATUS_COLORS = { "": "#e5e7eb", "gap": "#fee2e2", "partial": "#fef3c7", "complete": "#dcfce7" };
+const STATUS_TEXT = { "": "#6b7280", "gap": "#dc2626", "partial": "#d97706", "complete": "#16a34a" };
+const CHANGE_COLORS = { "1:1": { bg: "#dbeafe", text: "#1e40af" }, "ELEVATED": { bg: "#ede9fe", text: "#5b21b6" }, "MERGED": { bg: "#fef3c7", text: "#92400e" }, "EXPANDED": { bg: "#f3f4f6", text: "#374151" }, "NEW": { bg: "#dcfce7", text: "#166534" } };
+const CH_NAMES = { 1: "Mission & Purpose", 2: "Administration", 3: "Park Planning", 4: "Human Resources", 5: "Finance", 6: "Programs", 7: "Facilities", 8: "Risk & Safety", 9: "Marketing", 10: "Evaluation" };
+
+export default function App() {
+  const [scores, setScores] = useState({});
+  const [notes, setNotes] = useState({});
+  const [selected, setSelected] = useState(null);
+  const [filterCh, setFilterCh] = useState(0);
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterFund, setFilterFund] = useState("all");
+  const [view, setView] = useState("grid");
+
+  const key = (stdNum, qi) => `${stdNum}__${qi}`;
+
+  const getStdStatus = (std) => {
+    const answers = std.rubric.map((_, i) => scores[key(std.new, i)] || "");
+    if (answers.every(a => a === "")) return "";
+    if (answers.some(a => a === "gap")) return "gap";
+    if (answers.every(a => a === "complete")) return "complete";
+    return "partial";
+  };
+
+  const filtered = useMemo(() => standards.filter(s => {
+    if (filterCh && s.ch !== filterCh) return false;
+    if (filterStatus !== "" && getStdStatus(s) !== filterStatus) return false;
+    if (filterFund === "fund" && !s.fundamental) return false;
+    if (filterFund === "nonfund" && s.fundamental) return false;
+    return true;
+  }), [scores, filterCh, filterStatus, filterFund]);
+
+  const summary = useMemo(() => {
+    const r = { total: standards.length, complete: 0, partial: 0, gap: 0, notStarted: 0 };
+    standards.forEach(s => {
+      const st = getStdStatus(s);
+      if (st === "complete") r.complete++;
+      else if (st === "partial") r.partial++;
+      else if (st === "gap") r.gap++;
+      else r.notStarted++;
+    });
+    return r;
+  }, [scores]);
+
+  const pct = Math.round((summary.complete / summary.total) * 100);
+
+  const selStd = selected ? standards.find(s => s.new === selected) : null;
+
+  return (
+    <div style={{ fontFamily: "system-ui, sans-serif", maxWidth: 1100, margin: "0 auto", padding: 16, fontSize: 13 }}>
+      <div style={{ background: "#1e3a5f", color: "white", borderRadius: 10, padding: "16px 22px", marginBottom: 14 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>CAPRA 2027 Standards – Compliance Evaluator</h1>
+            <p style={{ margin: "3px 0 0", opacity: 0.8, fontSize: 12 }}>Rate each rubric question · track gaps · transition from 154 → 67 standards</p>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 24, fontWeight: 800 }}>{pct}%</div>
+              <div style={{ fontSize: 11, opacity: 0.7 }}>Complete</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 6, marginTop: 12, flexWrap: "wrap" }}>
+          {[["complete", "#16a34a", summary.complete], ["partial", "#d97706", summary.partial], ["gap", "#dc2626", summary.gap], ["notStarted", "#9ca3af", summary.notStarted]].map(([k, c, v]) => (
+            <div key={k} style={{ background: "rgba(255,255,255,0.15)", borderRadius: 6, padding: "4px 12px", fontSize: 12 }}>
+              <span style={{ color: c, fontWeight: 700 }}>●</span> {k === "notStarted" ? "Not Started" : k.charAt(0).toUpperCase() + k.slice(1)}: <strong>{v}</strong>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 10, background: "rgba(255,255,255,0.2)", borderRadius: 4, height: 8 }}>
+          <div style={{ background: "#4ade80", borderRadius: 4, height: 8, width: `${pct}%`, transition: "width 0.3s" }} />
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
+        <select value={filterCh} onChange={e => setFilterCh(+e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 12 }}>
+          <option value={0}>All Chapters</option>
+          {Object.entries(CH_NAMES).map(([k, v]) => <option key={k} value={k}>Ch. {k}: {v}</option>)}
+        </select>
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 12 }}>
+          <option value="">All Statuses</option>
+          {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <select value={filterFund} onChange={e => setFilterFund(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 12 }}>
+          <option value="all">All Standards</option>
+          <option value="fund">Fundamental Only</option>
+          <option value="nonfund">Non-Fundamental Only</option>
+        </select>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+          {["grid", "list"].map(v => (
+            <button key={v} onClick={() => setView(v)} style={{ padding: "5px 12px", borderRadius: 5, border: "none", cursor: "pointer", background: view === v ? "#1e3a5f" : "#e5e7eb", color: view === v ? "white" : "#374151", fontWeight: 600, fontSize: 12 }}>{v === "grid" ? "⊞ Grid" : "≡ List"}</button>
+          ))}
+        </div>
+        <span style={{ color: "#6b7280", fontSize: 12 }}>{filtered.length} shown</span>
+      </div>
+
+      {/* Grid or List */}
+      {!selStd && view === "grid" && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
+          {filtered.map(s => {
+            const st = getStdStatus(s);
+            const ct = CHANGE_COLORS[s.changeType];
+            const answered = s.rubric.filter((_, i) => scores[key(s.new, i)] && scores[key(s.new, i)] !== "").length;
+            return (
+              <div key={s.new} onClick={() => setSelected(s.new)} style={{ background: STATUS_COLORS[st], borderRadius: 8, padding: 12, cursor: "pointer", border: "1px solid #e5e7eb", transition: "box-shadow 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)"}
+                onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <span style={{ fontWeight: 800, color: "#1e3a5f", fontSize: 15 }}>{s.new}</span>
+                  {s.fundamental && <span style={{ background: "#1e3a5f", color: "white", borderRadius: 10, padding: "1px 7px", fontSize: 10, fontWeight: 700 }}>F</span>}
+                </div>
+                <div style={{ fontWeight: 600, fontSize: 12, marginTop: 4, lineHeight: 1.4, color: "#111827" }}>{s.newTitle}</div>
+                <div style={{ display: "flex", gap: 5, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <span style={{ background: ct.bg, color: ct.text, borderRadius: 10, padding: "2px 7px", fontSize: 10, fontWeight: 700 }}>{s.changeType}</span>
+                  <span style={{ color: STATUS_TEXT[st], fontSize: 11, fontWeight: 600 }}>{answered}/{s.rubric.length} ✓</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {!selStd && view === "list" && (
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+          <thead>
+            <tr style={{ background: "#f3f4f6" }}>
+              {["#", "Title", "F", "Change", "Old Standard(s)", "Status", "Progress"].map(h => (
+                <th key={h} style={{ padding: "8px 10px", textAlign: "left", borderBottom: "2px solid #d1d5db", fontWeight: 700, whiteSpace: "nowrap" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((s, i) => {
+              const st = getStdStatus(s);
+              const answered = s.rubric.filter((_, qi) => scores[key(s.new, qi)] && scores[key(s.new, qi)] !== "").length;
+              const ct = CHANGE_COLORS[s.changeType];
+              return (
+                <tr key={s.new} onClick={() => setSelected(s.new)} style={{ background: i % 2 === 0 ? "white" : "#f9fafb", cursor: "pointer", borderBottom: "1px solid #e5e7eb" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#eff6ff"}
+                  onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? "white" : "#f9fafb"}>
+                  <td style={{ padding: "8px 10px", fontWeight: 800, color: "#1e3a5f", whiteSpace: "nowrap" }}>{s.new}</td>
+                  <td style={{ padding: "8px 10px", fontWeight: 500 }}>{s.newTitle}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "center" }}>{s.fundamental ? <span style={{ background: "#1e3a5f", color: "white", borderRadius: 10, padding: "1px 6px", fontSize: 10 }}>F</span> : ""}</td>
+                  <td style={{ padding: "8px 10px" }}><span style={{ background: ct.bg, color: ct.text, borderRadius: 10, padding: "2px 8px", fontSize: 10, fontWeight: 700 }}>{s.changeType}</span></td>
+                  <td style={{ padding: "8px 10px", color: "#6b7280", fontSize: 11 }}>{s.old}</td>
+                  <td style={{ padding: "8px 10px" }}><span style={{ background: STATUS_COLORS[st], color: STATUS_TEXT[st], borderRadius: 10, padding: "2px 8px", fontWeight: 600, fontSize: 11 }}>{STATUS[st]}</span></td>
+                  <td style={{ padding: "8px 10px", whiteSpace: "nowrap", color: "#6b7280" }}>{answered}/{s.rubric.length}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+
+      {/* Detail Panel */}
+      {selStd && (
+        <div style={{ background: "white", border: "1px solid #d1d5db", borderRadius: 10, padding: 20 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+            <div>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 800, fontSize: 20, color: "#1e3a5f" }}>{selStd.new}</span>
+                {selStd.fundamental && <span style={{ background: "#1e3a5f", color: "white", borderRadius: 10, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>FUNDAMENTAL</span>}
+                <span style={{ background: CHANGE_COLORS[selStd.changeType].bg, color: CHANGE_COLORS[selStd.changeType].text, borderRadius: 10, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>{selStd.changeType}</span>
+              </div>
+              <h2 style={{ margin: "6px 0 4px", fontSize: 16, color: "#111827" }}>{selStd.newTitle}</h2>
+              <div style={{ fontSize: 12, color: "#6b7280" }}>
+                <span style={{ fontWeight: 600 }}>Previous standard(s):</span> {selStd.old} — {selStd.oldTitles}
+              </div>
+              <div style={{ fontSize: 12, color: "#6b7280", marginTop: 3 }}>
+                <span style={{ fontWeight: 600 }}>Transition note:</span> {selStd.notes}
+              </div>
+            </div>
+            <button onClick={() => setSelected(null)} style={{ padding: "6px 14px", borderRadius: 6, border: "none", cursor: "pointer", background: "#f3f4f6", fontWeight: 600, fontSize: 13 }}>← Back</button>
+          </div>
+
+          <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 16 }}>
+            <h3 style={{ margin: "0 0 14px", fontSize: 14, color: "#374151" }}>Rubric Questions – Rate Your Compliance</h3>
+            {selStd.rubric.map((q, qi) => {
+              const k = key(selStd.new, qi);
+              const s = scores[k] || "";
+              return (
+                <div key={qi} style={{ background: STATUS_COLORS[s], borderRadius: 8, padding: "12px 14px", marginBottom: 10, border: "1px solid #e5e7eb" }}>
+                  <div style={{ fontWeight: 600, color: "#111827", marginBottom: 8, lineHeight: 1.5 }}>
+                    <span style={{ color: "#6b7280", marginRight: 6 }}>Q{qi + 1}.</span>{q}
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {Object.entries(STATUS).map(([v, label]) => (
+                      <button key={v} onClick={() => setScores(prev => ({ ...prev, [k]: v }))}
+                        style={{ padding: "4px 12px", borderRadius: 20, border: `2px solid ${s === v ? STATUS_TEXT[v] || "#9ca3af" : "#d1d5db"}`, cursor: "pointer", background: s === v ? (STATUS_COLORS[v] || "#f3f4f6") : "white", color: s === v ? (STATUS_TEXT[v] || "#6b7280") : "#6b7280", fontWeight: s === v ? 700 : 500, fontSize: 12 }}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ marginTop: 16, borderTop: "1px solid #e5e7eb", paddingTop: 14 }}>
+            <label style={{ fontWeight: 600, fontSize: 13, color: "#374151", display: "block", marginBottom: 6 }}>Agency Notes / Documentation References</label>
+            <textarea value={notes[selStd.new] || ""} onChange={e => setNotes(prev => ({ ...prev, [selStd.new]: e.target.value }))}
+              placeholder="Enter notes, documentation references, responsible staff, or transition action items..."
+              style={{ width: "100%", minHeight: 80, padding: "8px 10px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 13, resize: "vertical", boxSizing: "border-box" }} />
+          </div>
+
+          {/* Nav between standards */}
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 14 }}>
+            {(() => {
+              const idx = filtered.findIndex(s => s.new === selStd.new);
+              const prev = filtered[idx - 1];
+              const next = filtered[idx + 1];
+              return (
+                <>
+                  <button onClick={() => prev && setSelected(prev.new)} disabled={!prev}
+                    style={{ padding: "6px 14px", borderRadius: 6, border: "none", cursor: prev ? "pointer" : "default", background: prev ? "#e5e7eb" : "#f9fafb", color: prev ? "#374151" : "#d1d5db", fontWeight: 600, fontSize: 12 }}>
+                    ← {prev ? prev.new : ""}
+                  </button>
+                  <button onClick={() => next && setSelected(next.new)} disabled={!next}
+                    style={{ padding: "6px 14px", borderRadius: 6, border: "none", cursor: next ? "pointer" : "default", background: next ? "#e5e7eb" : "#f9fafb", color: next ? "#374151" : "#d1d5db", fontWeight: 600, fontSize: 12 }}>
+                    {next ? next.new : ""} →
+                  </button>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 16 }}>
+        Note: Ratings are stored in this browser session only. For persistent tracking, copy notes to an external document. F = Fundamental standard (all 37 must be met). Sources: CAPRA 2027 National Accreditation Standards (August 2025) and 2019/2023 Standards (154 standards).
+      </p>
+    </div>
+  );
+}
