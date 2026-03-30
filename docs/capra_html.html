@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAPRA 2027 National Accreditation Standards</title>
+<style>
+  :root {
+    --teal: #0e6b6b; --teal-light: #e6f4f4; --teal-dark: #084e4e;
+    --gold: #c8952a; --gold-light: #fdf5e6;
+    --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+    --gray-400: #9ca3af; --gray-600: #4b5563; --gray-800: #1f2937;
+    --fund-bg: #e6f4f4; --fund-border: #0e6b6b;
+    --radius: 8px; --shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; color: var(--gray-800); background: var(--gray-50); line-height: 1.6; }
+
+  /* ── HEADER ── */
+  header { background: var(--teal-dark); color: #fff; padding: 28px 24px 20px; }
+  header h1 { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.3px; }
+  header p { opacity: .8; font-size: .9rem; margin-top: 4px; }
+  .header-meta { display:flex; flex-wrap:wrap; gap:12px; margin-top:14px; }
+  .badge { background: rgba(255,255,255,.15); border-radius:20px; padding:4px 14px; font-size:.82rem; }
+  .badge strong { color:#7ff0c8; }
+
+  /* ── NAV TABS ── */
+  nav { background:#fff; border-bottom:2px solid var(--gray-200); position:sticky; top:0; z-index:100; overflow-x:auto; white-space:nowrap; }
+  nav ul { display:flex; list-style:none; padding:0 16px; }
+  nav ul li a { display:block; padding:12px 14px; font-size:.84rem; font-weight:600; color:var(--gray-600); text-decoration:none; border-bottom:3px solid transparent; transition:all .15s; }
+  nav ul li a:hover { color:var(--teal); }
+  nav ul li a.active { color:var(--teal); border-bottom-color:var(--teal); }
+
+  /* ── SEARCH BAR ── */
+  .search-bar { background:#fff; padding:12px 20px; border-bottom:1px solid var(--gray-200); display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .search-bar input { flex:1; min-width:220px; padding:8px 14px; border:1px solid var(--gray-200); border-radius:20px; font-size:.9rem; outline:none; }
+  .search-bar input:focus { border-color:var(--teal); }
+  .search-bar label { font-size:.83rem; color:var(--gray-600); display:flex; align-items:center; gap:5px; cursor:pointer; }
+  #search-count { font-size:.82rem; color:var(--gray-400); margin-left:auto; }
+
+  /* ── MAIN LAYOUT ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  /* ── CHAPTER SECTION ── */
+  .chapter { margin-bottom: 40px; }
+  .chapter-header { background: var(--teal); color: #fff; border-radius: var(--radius) var(--radius) 0 0; padding: 14px 20px; }
+  .chapter-header h2 { font-size: 1.1rem; font-weight: 700; }
+  .chapter-intro { background: var(--teal-light); border: 1px solid var(--teal); border-top: none; padding: 14px 20px; font-size: .88rem; color: var(--teal-dark); line-height: 1.65; }
+  .chapter-intro details summary { font-weight: 600; cursor: pointer; }
+  .chapter-intro details p { margin-top: 8px; }
+
+  /* ── STANDARD CARD ── */
+  .standard { border: 1px solid var(--gray-200); border-top: none; background: #fff; }
+  .standard:last-child { border-radius: 0 0 var(--radius) var(--radius); }
+  .standard.fundamental { border-left: 4px solid var(--teal); }
+  .standard-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; cursor: pointer; user-select: none; transition: background .12s; }
+  .standard-header:hover { background: var(--gray-50); }
+  .std-num { font-weight: 800; color: var(--teal); font-size: 1rem; min-width: 38px; }
+  .std-title { font-weight: 600; flex: 1; }
+  .f-badge { background: var(--teal); color: #fff; border-radius: 12px; padding: 2px 10px; font-size: .72rem; font-weight: 700; white-space: nowrap; }
+  .chevron { color: var(--gray-400); font-size: 1.1rem; transition: transform .2s; margin-left: 6px; }
+  .standard-header[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+
+  /* ── STANDARD BODY ── */
+  .standard-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--gray-200); }
+  .standard-body.open { display: block; }
+  .standard-text { font-size: .9rem; color: var(--gray-600); margin: 14px 0 10px; line-height: 1.7; }
+  .section-label { font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--teal-dark); margin: 16px 0 8px; }
+  .eoc-list { list-style: none; padding: 0; }
+  .eoc-list li { padding: 7px 0 7px 20px; border-bottom: 1px solid var(--gray-100); font-size: .88rem; position: relative; line-height: 1.6; }
+  .eoc-list li::before { content: '•'; position: absolute; left: 4px; color: var(--teal); font-weight: 900; }
+  .eoc-list li:last-child { border-bottom: none; }
+  .sub-list { list-style: none; padding: 0; margin: 6px 0 0 16px; }
+  .sub-list li { padding: 4px 0 4px 16px; font-size: .85rem; color: var(--gray-600); position: relative; }
+  .sub-list li::before { content: '–'; position: absolute; left: 0; color: var(--gold); }
+
+  /* ── RUBRIC ── */
+  .rubric-box { background: var(--gold-light); border: 1px solid #e8c06a; border-radius: var(--radius); padding: 14px 16px; margin-top: 12px; }
+  .rubric-box .section-label { color: #8a6500; margin-top: 0; }
+  .rubric-list { list-style: none; padding: 0; margin: 0; }
+  .rubric-list li { padding: 6px 0 6px 20px; font-size: .86rem; border-bottom: 1px solid #f0d98a; position: relative; }
+  .rubric-list li:last-child { border-bottom: none; }
+  .rubric-list li::before { content: '?'; position: absolute; left: 2px; color: var(--gold); font-weight: 900; font-size: .8rem; }
+
+  /* ── PRE-ASSESSMENT SECTION ── */
+  .pre-assessment { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 24px; margin-bottom: 32px; }
+  .pre-assessment h3 { color: var(--teal-dark); font-size: 1rem; margin-bottom: 8px; }
+  .pre-assessment p { font-size: .88rem; color: var(--gray-600); margin-bottom: 12px; }
+  .pa-section { border: 1px solid var(--gray-200); border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
+  .pa-section summary { font-weight: 600; padding: 10px 14px; cursor: pointer; background: var(--gray-50); font-size: .9rem; }
+  .pa-section summary:hover { background: var(--teal-light); }
+  .pa-section .pa-body { padding: 12px 16px; font-size: .87rem; color: var(--gray-600); }
+
+  /* ── PROCESS / OVERVIEW ── */
+  .overview-box { background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 22px; margin-bottom: 32px; }
+  .overview-box h3 { color: var(--teal-dark); margin-bottom: 10px; }
+  .fund-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin-top: 12px; }
+  .fund-item { background: var(--fund-bg); border: 1px solid var(--fund-border); border-radius: 6px; padding: 6px 12px; font-size: .83rem; font-weight: 600; color: var(--teal-dark); }
+  .stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat { background: var(--teal-light); border-radius: var(--radius); padding: 10px 18px; text-align: center; }
+  .stat .n { font-size: 1.6rem; font-weight: 800; color: var(--teal); }
+  .stat .l { font-size: .75rem; color: var(--teal-dark); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+
+  /* ── HIDDEN / SEARCH ── */
+  .hidden { display: none !important; }
+
+  /* ── PRINT ── */
+  @media print {
+    nav, .search-bar, header .header-meta { display: none; }
+    .standard-body { display: block !important; }
+    .chevron { display: none; }
+    .chapter { page-break-inside: avoid; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3rem; }
+    nav ul li a { padding: 10px 9px; font-size: .77rem; }
+    .standard-header { padding: 11px 14px; }
+    .standard-body { padding: 0 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>2027 CAPRA National Accreditation Standards</h1>
+  <p>Commission for Accreditation of Park and Recreation Agencies &nbsp;|&nbsp; Revised August 2025</p>
+  <div class="header-meta">
+    <div class="badge">Total Standards: <strong>67</strong></div>
+    <div class="badge">Fundamental: <strong>37</strong></div>
+    <div class="badge">Non-Fundamental: <strong>30</strong></div>
+    <div class="badge">Chapters: <strong>10</strong></div>
+  </div>
+</header>
+
+<nav id="main-nav">
+  <ul>
+    <li><a href="#overview" data-section="overview">Overview</a></li>
+    <li><a href="#preassess" data-section="preassess">Pre-Assessment</a></li>
+    <li><a href="#ch1" data-section="ch1">1 · Mission</a></li>
+    <li><a href="#ch2" data-section="ch2">2 · Admin</a></li>
+    <li><a href="#ch3" data-section="ch3">3 · Planning</a></li>
+    <li><a href="#ch4" data-section="ch4">4 · HR</a></li>
+    <li><a href="#ch5" data-section="ch5">5 · Finance</a></li>
+    <li><a href="#ch6" data-section="ch6">6 · Programs</a></li>
+    <li><a href="#ch7" data-section="ch7">7 · Facilities</a></li>
+    <li><a href="#ch8" data-section="ch8">8 · Risk &amp; Safety</a></li>
+    <li><a href="#ch9" data-section="ch9">9 · Marketing</a></li>
+    <li><a href="#ch10" data-section="ch10">10 · Evaluation</a></li>
+  </ul>
+</nav>
+
+<div class="search-bar">
+  <input type="search" id="search" placeholder="Search standards, keywords, EOC…" aria-label="Search standards">
+  <label><input type="checkbox" id="fund-only"> Fundamental only</label>
+  <label><input type="checkbox" id="expand-all"> Expand all</label>
+  <span id="search-count"></span>
+</div>
+
+<main>
+
+<!-- ══════════════════════════════ OVERVIEW ══════════════════════════════ -->
+<section id="overview">
+<div class="overview-box">
+  <h3>Accreditation Process Overview</h3>
+  <div class="stat-row">
+    <div class="stat"><div class="n">67</div><div class="l">Total Standards</div></div>
+    <div class="stat"><div class="n">37</div><div class="l">Fundamental</div></div>
+    <div class="stat"><div class="n">30</div><div class="l">Non-Fundamental</div></div>
+    <div class="stat"><div class="n">5 yrs</div><div class="l">Accreditation Cycle</div></div>
+  </div>
+  <p style="font-size:.9rem;color:var(--gray-600);margin-bottom:14px;">To achieve accreditation, an agency must comply with <strong>all 37 Fundamental Standards</strong> and <strong>24 of the 30 Non-Fundamental Standards</strong> upon initial accreditation, and <strong>27 of the 30 Non-Fundamental Standards</strong> upon reaccreditation.</p>
+  <div class="section-label" style="margin-top:0">List of All 37 Fundamental Standards</div>
+  <div class="fund-grid">
+    <div class="fund-item">★ 1.1 Mission, Vision, and Values</div>
+    <div class="fund-item">★ 1.2 Strategic Plan</div>
+    <div class="fund-item">★ 1.3 Community Involvement in Strategic Planning</div>
+    <div class="fund-item">★ 1.4 Personnel Involvement in Strategic Planning</div>
+    <div class="fund-item">★ 2.1 Advisory Boards and Commissions</div>
+    <div class="fund-item">★ 2.5 ADA Services &amp; Adaptive Programs</div>
+    <div class="fund-item">★ 3.1 Community and Park Planning Strategy</div>
+    <div class="fund-item">★ 3.3 Parks and Recreation System Master Plan</div>
+    <div class="fund-item">★ 4.1 HR Planning, Workforce Dev., and Culture</div>
+    <div class="fund-item">★ 4.2 Personnel Policies and Procedures Manual</div>
+    <div class="fund-item">★ 5.1 Financial Management, Responsibility &amp; Accountability</div>
+    <div class="fund-item">★ 5.2 Legal Authority and Fiscal Policy</div>
+    <div class="fund-item">★ 5.3 Comprehensive Revenue Policy</div>
+    <div class="fund-item">★ 5.5 Financial Statements</div>
+    <div class="fund-item">★ 5.6 Purchasing Policy</div>
+    <div class="fund-item">★ 5.7 Independent Audit</div>
+    <div class="fund-item">★ 5.8 Annual or Biennial Budget</div>
+    <div class="fund-item">★ 5.10 Capital Asset Management</div>
+    <div class="fund-item">★ 6.1 Recreation Program Responsibility &amp; Accountability</div>
+    <div class="fund-item">★ 6.2 Program and Service Determinants</div>
+    <div class="fund-item">★ 6.3 Recreation Program Plan (RPP)</div>
+    <div class="fund-item">★ 6.4 Program Evaluation – Staff Training</div>
+    <div class="fund-item">★ 7.1 Facility and Land Use Responsibility</div>
+    <div class="fund-item">★ 7.2 Park and Recreation Land Acquisition and Disposal</div>
+    <div class="fund-item">★ 7.3 Park and Recreation Property Development</div>
+    <div class="fund-item">★ 7.4 Maintenance and Operations Management</div>
+    <div class="fund-item">★ 8.1 Risk Management Responsibility and Strategy</div>
+    <div class="fund-item">★ 8.2 Codes, Laws, Ordinances, Policies, and/or Rules</div>
+    <div class="fund-item">★ 8.3 General Security Plan</div>
+    <div class="fund-item">★ 8.4 Personnel Safety Training</div>
+    <div class="fund-item">★ 8.7 Accidents/Incidents</div>
+    <div class="fund-item">★ 8.8 Emergency Management Plan</div>
+    <div class="fund-item">★ 9.2 External Marketing and Communications</div>
+    <div class="fund-item">★ 9.5 Community Engagement</div>
+    <div class="fund-item">★ 9.6 Crisis Communications</div>
+    <div class="fund-item">★ 10.2 Systematic Data Collection</div>
+    <div class="fund-item">★ 10.3 Systematic Data Analysis and Action</div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════ PRE-ASSESSMENT ══════════════════════════════ -->
+<section id="preassess">
+<div class="pre-assessment">
+  <h3>Agency Pre-Assessment Report</h3>
+  <p>These sections are required prior to the self-assessment and visit processes. All elements must be deemed complete by the CRT Advisor before an agency moves forward.</p>
+
+  <details class="pa-section">
+    <summary>Section 1 – General Historical Information</summary>
+    <div class="pa-body">
+      <ul class="eoc-list">
+        <li>Provide a narrative describing a general overview of the founding of the agency and key points in its history and governance.</li>
+        <li>Include impactful events that shaped the agency's development, services, community, etc., such as major governance changes, natural disasters, social movements, and the like.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 2 – Source of Authority</summary>
+    <div class="pa-body">
+      <p>The source of agency authority or legal basis of operation and the extent of powers shall be identified in a legal document such as the state statute, local charter, city ordinance, or park district code.</p>
+      <ul class="eoc-list">
+        <li>Provide legal citation and, if appropriate, date of resolution by local governing entity or legal authority.</li>
+        <li>Provide a narrative describing how the source of authority defines how the agency operates.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 3 – Approving Authority/Governing Body</summary>
+    <div class="pa-body">
+      <ul class="eoc-list">
+        <li>Provide a chart or diagram and narrative description of the organizational structure, interrelationship of organizational components and powers of authority over policymaking.</li>
+        <li>Provide examples that illustrate how agency staff work in compliance with the established approving authority structure.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 4 – Delegation of Authority</summary>
+    <div class="pa-body">
+      <ul class="eoc-list">
+        <li>Provide documentation of the delegation of responsibilities among approving authority, advisory body, agency administrator/director, and staff regarding development and implementation of policies, rules, regulations, and operational procedures.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 5 – Agency Leadership</summary>
+    <div class="pa-body">
+      <p>There shall be a designated Agency Administrator/Director, employed full-time, year-round, and qualified by experience, education, certification, and/or training in park, recreation, leisure services, tourism, or related disciplines.</p>
+      <ul class="eoc-list">
+        <li>Provide the position description for the Agency Administrator/Director, including resume with proof of required certifications and qualifications.</li>
+        <li>Provide a descriptive narrative linking the qualifications of the position to the needs of the agency.</li>
+        <li>If from a related or non-related discipline, provide a summary of how the person's qualifications relate to park and/or recreation management and NRPA's three pillars.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 6 – Jurisdiction</summary>
+    <div class="pa-body">
+      <ul class="eoc-list">
+        <li>Provide a map with geographical boundaries of jurisdiction and service areas, including location of facilities identified.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 7 – Organization Structure</summary>
+    <div class="pa-body">
+      <ul class="eoc-list">
+        <li>Provide an up-to-date organizational chart with a narrative description explaining how the structure is suited to the agency's mission, vision, strategic plan, methods of operation and relationship to the community.</li>
+        <li>Identify and explain how adjustments to the structure were made in the past five years to create greater efficiency and/or effectiveness.</li>
+        <li>Indicate how this information is made available to staff and the public.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 8 – Agency Awards and Citations</summary>
+    <div class="pa-body">
+      <ul class="eoc-list">
+        <li>Provide a list of both agency and agency staff awards at the local, state, and national level received in the last ten years as well as any important accomplishments or successes.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 9 – Agency Changes Since Last Accreditation <em>(Reaccrediting agencies only)</em></summary>
+    <div class="pa-body">
+      <ul class="eoc-list">
+        <li>Provide a narrative that describes changes in leadership, new major facilities, added or dropped programs/services, staffing levels, wildfires, floods, pandemics, etc.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="pa-section">
+    <summary>Section 10 – Periodic Timetable for Review of Documents</summary>
+    <div class="pa-body">
+      <p><strong>Fundamental Standards requiring periodic review:</strong> 1.2, 2.5, 3.3, 4.2, 5.3, 5.6, 6.3, 7.2, 7.3, 8.3, 8.8, 10.3</p>
+      <p><strong>Non-Fundamental Standards requiring periodic review:</strong> 2.6, 4.3, 4.8, 4.9, 7.5, 7.6, 7.7, 9.4</p>
+      <ul class="eoc-list">
+        <li>Provide the agency review schedule for the documents referenced in the enumerated standards, including the Authority responsible for approving each document.</li>
+      </ul>
+    </div>
+  </details>
+</div>
+</section>
+
+<!-- ══════════════ CHAPTER TEMPLATE MACRO ══════════════ -->
+
+<!-- CH 1 -->
+<section id="ch1">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 1 &mdash; Agency Mission and Purpose</h2></div>
+  <div class="chapter-intro">
+    <details><summary>Chapter Introduction</summary>
+    <p>The mission establishes the organizational purpose, and goals and objectives establish the strategic direction. Organization values affect how the agency, through its leadership and staff, relate to other governing bodies, agencies, and organizations, and how it incorporates input from citizens and staff. Strategic planning is vital to high performing organizations and involves organizational and community input to identify and come to agreement on vision, mission, and values that support and guide the systems, structures, and strategies as a framework for organizational progress. Engaging the community and staff in the process provides buy-in and a common understanding of the direction for the agency.</p>
+    </details>
+  </div>
+
+  <!-- 1.1 -->
+  <div class="standard fundamental" data-std="1.1" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false">
+      <span class="std-num">1.1</span>
+      <span class="std-title">Mission, Vision, and Values</span>
+      <span class="f-badge">★ Fundamental</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall have an approved mission statement prescribing the purpose of the organization, a vision that casts direction for the long-term future of the organization, and values that set a tone for the agency's culture.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list">
+        <li>Provide the approved mission, vision, and values statements and provide evidence of regular review which may be via retreat, strategic planning, approving authority review, or the like.</li>
+        <li>Provide a narrative describing how the mission, vision, and values were derived from the purpose and/or source of authority of the agency or from recent community input and engagement.</li>
+        <li>Provide in the narrative how the mission, vision, and values are embedded in the culture of the organization, strategic plans, and master plans (PMP and RPP), and that the mission, vision, and values are communicated to the public.</li>
+      </ul>
+      <div class="rubric-box">
+        <div class="section-label">Appendix A – Rubric Questions</div>
+        <ul class="rubric-list">
+          <li>Did the agency provide mission, vision, and values statements properly approved by the appropriate approving authority?</li>
+          <li>Does the narrative describe how these statements aligned with the Agency's purpose or authority?</li>
+          <li>Was the mission, vision, and values communicated with staff?</li>
+          <li>Are these statements posted on agency website in view of public?</li>
+          <li>Is the mission, vision, and values embedded in the culture and work of the agency?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.2 -->
+  <div class="standard fundamental" data-std="1.2" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false">
+      <span class="std-num">1.2</span>
+      <span class="std-title">Strategic Plan</span>
+      <span class="f-badge">★ Fundamental</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="standard-body">
+      <p class="standard-text">The agency shall have an approved strategic plan derived from the mission and vision that establishes goals and objectives to direct its actions and decision-making. The document shall guide the efforts of the agency for two (2) to five (5) years.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list">
+        <li>Provide the strategic plan approved by the appropriate authority within the last five years.</li>
+        <li>Provide a narrative that demonstrates alignment among mission, vision, values, and other pertinent agency planning documents such as the overarching organization's strategic objectives.</li>
+        <li>Provide evidence of annual review with progress updates on agency goals and objectives established by the plan.</li>
+      </ul>
+      <div class="rubric-box">
+        <div class="section-label">Appendix A – Rubric Questions</div>
+        <ul class="rubric-list">
+          <li>Did the agency provide an approved strategic plan within the last five years?</li>
+          <li>Did the narrative demonstrate how the agency's mission, vision, and values align with the overarching organization's strategic goals and planning documents?</li>
+          <li>Has the agency provided evidence of an annual review?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 -->
+  <div class="standard fundamental" data-std="1.3" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false">
+      <span class="std-num">1.3</span>
+      <span class="std-title">Community Involvement in Agency Strategic Planning</span>
+      <span class="f-badge">★ Fundamental</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall solicit and consider the needs of the service area's demographics with its adoption of strategic actions. Community involvement shall be the focus of a Master Plan and inform the creation of a Strategic Plan. The Strategic Plan should include an outreach focus on under-resourced communities and previously left out populations.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list">
+        <li>Provide specific examples of how community outreach and input from the Master Plan and/or Needs Assessment have informed the agency's strategic planning goals and objectives.</li>
+        <li>Describe how the Strategic Plan will help the agency support community needs and broader goals outlined in the Master Plan.</li>
+      </ul>
+      <div class="rubric-box">
+        <div class="section-label">Appendix A – Rubric Questions</div>
+        <ul class="rubric-list">
+          <li>Was the Agency's strategic plan developed following outreach to and engagement with a wide variety of community members that are representative of the entire community's demographics?</li>
+          <li>Did the agency share examples of community outreach or engagement they conducted (like surveys, focus groups or public meetings)?</li>
+          <li>Does the narrative describe how the strategic plan will support community needs?</li>
+          <li>Does the agency describe how the strategic plan connects to the master plan?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.4 -->
+  <div class="standard fundamental" data-std="1.4" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false">
+      <span class="std-num">1.4</span>
+      <span class="std-title">Personnel Involvement in Agency Strategic Planning</span>
+      <span class="f-badge">★ Fundamental</span>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall have outreach and include input on strategic planning efforts from staff at multiple levels of employment and all divisions within the organization structure.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list">
+        <li>Provide a narrative description of the process used to collect staff input on Strategic Plan development from various levels within the organization.</li>
+        <li>Provide evidence of staff input being used to inform strategic planning objectives.</li>
+      </ul>
+      <div class="rubric-box">
+        <div class="section-label">Appendix A – Rubric Questions</div>
+        <ul class="rubric-list">
+          <li>Did the agency's strategic plan include outreach/input with the staff?</li>
+          <li>Did the staff outreach represent multiple levels and accessible within the organization?</li>
+          <li>Was the input received used to inform strategic planning goals and objectives?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CH 2 -->
+<section id="ch2">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 2 &mdash; Administration and Organizational Resources</h2></div>
+  <div class="chapter-intro">
+    <details><summary>Chapter Introduction</summary>
+    <p>This chapter is all about capacity management. Advisory boards and commissions are utilized to influence, direct, and, often, approve policy, strategy, and financial decisions necessary for the agency to carry out its mission. An effective administrative reporting system ensures communications throughout the chain of command. Engaging in the use of right-fit-to-the-agency technological resources enhances efficiency and effectiveness. Agency transparency is a key component in building trust and credibility with the public. Agencies should ensure continuity of operations and regularly review such plans.</p>
+    </details>
+  </div>
+
+  <div class="standard fundamental" data-std="2.1" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">2.1</span><span class="std-title">Advisory Boards and Commissions</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">The agency shall have at least one board, commission, and/or committee comprised of members of the public that influence, direct, and that may approve policy, strategy, and financial decisions of the agency. This body may be advisory, policy-setting, elected, or appointed.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a list of public boards, commissions, and/or committees.</li><li>Provide evidence of input collected from each group that has influenced or directed policymaking, service delivery adjustments, or other changes to the organization.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Has the agency provided a list of public boards, commissions, and/or committees?</li><li>Has the agency demonstrated how input from boards, commissions, and/or committees has been used to inform decision-making related to policy-setting, service delivery adjustments, or other operational changes to the organization?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="2.2" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">2.2</span><span class="std-title">Agency Relationships</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">There shall be collaborative and cooperative relationships that assist in fulfillment of the agency's mission and its measurable performance objectives.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a matrix outlining a list of 3 Intergovernmental Agreement (IGA), Memoranda of Understanding (MOU) or ongoing cooperative projects or efforts with accompanying staff assigned, including:
+        <ul class="sub-list"><li>How this program fulfills the mission</li><li>Identifies the staff and their relationship with the partner agency</li><li>Start date and expiration date of agreement</li><li>Performance measures</li><li>Link to the agreement(s)</li></ul>
+      </li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Has the agency provided a matrix of 3 ongoing cooperative projects (based on the Evidence of Compliance) with specific staff assigned as liaisons that are providing assistance in fulfillment of the agency's mission and its measurable performance objectives?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="2.3" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">2.3</span><span class="std-title">Technological Resources</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall engage in progressive research, adoption, upgrade, installation, and/or usage of technology in furtherance of the agency's mission and planning strategies.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a matrix illustrating the technology used by the agency, including:
+        <ul class="sub-list"><li>Dates of adoption/installation or latest upgrade</li><li>Description of how each resource is used to further the mission and goals</li><li>Link or screenshot of technology example</li></ul>
+      </li><li>Examples should include but are not limited to data management and sharing systems, work order and assignment applications, park maintenance activities, and activity registration systems.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a matrix (based on the Evidence of Compliance) with all of the required information?</li><li>Has the agency demonstrated how the technology available to the agency is used in furtherance of its mission?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="2.4" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">2.4</span><span class="std-title">Records Management</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">There shall be a designated position responsible for records management. There shall be a policy in place that ensures public records are retained in compliance with open records laws intended to promote transparency. Such records shall be protected from loss through disaster by mitigation/recovery strategies.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide the position description that reflects responsibility for records management for the organization and agency liaison if different.</li><li>Provide the policy and procedures.</li><li>Demonstrate how a member of the community can access public records.</li><li>Provide a narrative describing how the agency has planned to recover records in the event of a disaster or other threat to agency records.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Records Management activities showing they are qualified to perform these duties?</li><li>Did the agency provide policy and procedures?</li><li>Did the agency provide the public records request process?</li><li>Was a process or strategy for protecting records from loss provided?</li><li>Did the agency describe how they plan to recover records in the event of a disaster?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard fundamental" data-std="2.5" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">2.5</span><span class="std-title">Adaptive Programs / ADA Services Accessibility Compliance</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">There shall be a policy or procedure available to all members of the public and staff which addresses issues pertaining to ADA compliance, access, and inclusive/adaptive programming. Agencies shall be compliant with the Americans with Disabilities Act (ADA). This standard requires agencies to appoint a person with overall compliance function fulfillment and services and programs compliance responsibility, publicly post notice per the requirements of the ADA, conduct an ADA Policy Audit, provide website accessibility, and conduct the ADA-required access audit for development of a Transition Plan.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide policy and procedures which address issues pertaining to ADA compliance, access, and adaptive programming.</li><li>Provide the position description that reflects responsibility for ADA compliance functions.</li><li>Demonstrate that the agency's website is accessible.</li><li>Provide the Transition Plan, including evidence of an access audit and regular review and reporting on progress in remedying barriers to access identified in the Audit.</li><li>Provide evidence that the agency provides adaptive programs or is cooperating with an agency or agencies who do provide such programming.</li><li>Provide evidence of a publicly posted notice that communicates the dispute process in compliance with the ADA.</li><li>Demonstrate how the policies and procedures are used to receive and respond to a complaint.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide the ADA policies and procedures?</li><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for ADA activities showing they are qualified to perform these duties?</li><li>Is the agency's website accessible?</li><li>Did the agency provide an ADA Transition Plan?</li><li>Has the agency demonstrated that the Transition Plan is regularly reviewed, and progress made to reduce barriers to access is documented?</li><li>Is there evidence that the agency is providing adaptive programs or is cooperating with other entity(ies) to provide such programming?</li><li>Did the agency provide evidence that ADA notices are posted and available to the public outlining the complaint process?</li><li>If a complaint has been received, has the agency demonstrated that it followed policies and procedures to find resolution?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="2.6" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">2.6</span><span class="std-title">Continuity of Operations</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall provide a procedure for the continuity of operations (COOP). The COOP is a plan designed to continue essential functions of an agency. Key elements include: a list of essential functions, orders of succession, delegation of authority, continuity of facilities, continuity of communications, vital records management, human capital, training and reconstitution.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a COOP plan that outlines the key roles for short term vacancies and provides guidance for emergency situations and outlines the elements of "Viable Continuity Capability" as outlined by FEMA.</li><li>The COOP should provide date of acceptance and latest review date.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a COOP with all key elements included (based on the Evidence of Compliance)?</li><li>Did the agency provide the date of acceptance of the COOP and date of last review?</li></ul></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CH 3 -->
+<section id="ch3">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 3 &mdash; Community and Park Planning</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>Planning activities are essential to effective agency management. Complex demands for services and limited public resources require that the park and recreation agency carefully research operational alternatives and plan future programs. The Agency Administrator/Director should be closely involved in the planning process. These standards examine the types of planning necessary for administrators to efficiently and effectively manage both day-to-day and long-term operations of a park and recreation agency.</p></details></div>
+
+  <div class="standard fundamental" data-std="3.1" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">3.1</span><span class="std-title">Community and Park Planning Strategy</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">There shall be a designated position (individual) or team responsible for the agency's community and park planning efforts. This individual/team shall influence local planning and community development efforts that further the Mission, Vision and Strategic Plan of the agency.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a narrative description of the overall community and park planning strategy utilized by the agency.</li><li>Provide the job description and relevant education/experience for the position(s) involved in planning efforts on behalf of the agency.</li><li>Provide evidence of involvement in local planning and community development with specific emphasis on influence in planning/development resulting in actions that support the Mission, Vision and Strategic Plan of the agency.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency describe their overall community and park planning strategy?</li><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Community and Park Planning activities showing they are qualified to perform these duties?</li><li>Has the agency demonstrated that local planning and community development support the mission, vision and strategic plan of the agency?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="3.2" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">3.2</span><span class="std-title">Planning with Regional, State and Federal Agencies</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">The agency shall be involved with external agencies having jurisdictional authority over land use matters in regional, state, or federal planning efforts to represent the community's park and recreation interests.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Demonstrate the role of the agency in regional, state or federal planning through personnel assignments and documentation of involvement with external agencies having overlapping or adjacent jurisdictional authority over land use matters.</li><li>Provide evidence of cooperative efforts that further the Mission, Vision and Strategic Plan.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Has the agency demonstrated that assigned community and park planning staff have a role in community and park planning activities that are conducted in cooperation with regional, state, and/or federal agencies?</li><li>Does this cooperation/involvement result in actions that support the mission, vision, and strategic plan objectives?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard fundamental" data-std="3.3" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">3.3</span><span class="std-title">Parks and Recreation System Master Plan</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">The agency shall adopt and periodically review a Parks and Recreation System Master Plan in alignment with its Mission, Vision and Strategic Plan that creates a basis for strategic investment in assets, property, facilities, and improvements.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide the plan which shall include an analysis of current conditions through community needs assessment, list of agency-managed parks and facilities, level of service analysis, and current trends. Evidence of review periodically (within last 5 years) is required.</li><li>The narrative shall describe how plan findings and recommendations are tied to Mission, Vision and Strategic Plan objectives to formulate a progression strategy from existing conditions to desired conditions.</li><li>The agency shall describe input/feedback efforts used that reach and/or include members of the community, users and non-users, to attempt to achieve results that can be applied community wide.</li><li>Evidence of initial or updated adoption.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a Parks and Recreation System Master Plan that was reviewed periodically (within last 5 years) that includes all required elements listed in the Evidence of Compliance?</li><li>Has the agency demonstrated that the Master Plan is a designed set of progressive steps showing the strategy from existing conditions to desired conditions?</li><li>Are the Master Plan's findings and recommendations in alignment with the mission, vision and strategic plan?</li><li>Did the agency receive feedback from both users and non-users to achieve a community-wide plan?</li><li>Has the agency demonstrated that community input collected was used to inform planning objectives?</li><li>Did the agency demonstrate evidence of initial or updated adoption?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="3.4" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">3.4</span><span class="std-title">Feasibility Studies</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">The agency shall investigate current conditions and project impacts prior to initiating planned park or recreation projects.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide examples of feasibility studies such as market, cost-benefit, site, transportation, environmental, comprehensive demographic and economic analyses.</li><li>Provide a narrative describing how a recent study was used to inform the decisions made related to a planned project.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide at least one example of a feasibility study used to inform decisions made related to a planned project?</li><li>Did the agency describe how a recent study was used to inform decisions?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="3.5" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">3.5</span><span class="std-title">Site Plans</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Site plans shall be created with input from residents living within the service area of the agency's property and in alignment with Park Master Plan objectives. Site plans shall be maintained for ease of access by staff.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a representative sampling of 2 or more of the agency's area and facility site plans, which may be new park site plans or park/facility renovations.</li><li>Provide a narrative describing how a recent site plan was developed using input from residents living within the service area.</li><li>Demonstrate that a site plan is in alignment with Park Master Plan objectives and community input.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a representative sampling of 2 or more facility site plans guiding the development of parks in the agency's park system?</li><li>Did the agency describe how a recent site plan was developed using community input from residents living within the service area?</li><li>Has the agency demonstrated that the site plan is in alignment with Park Master Plan objectives and community input?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="3.6" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">3.6</span><span class="std-title">Sustainability and Environmental Resilience Strategy</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Environmental resilience must be a conscious effort, planned and implemented with intention. Agencies shall set and implement goals, policies, procedures, and practices that promote sustainable practices and environmental resilience. A plan or strategy shall include a set of desired outcomes with specific indicators of success, describe and implement evaluation processes, and prescribe strategies for energy and resource conservation.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a narrative outlining the agency's sustainability and environmental resilience strategy and goals.</li><li>Demonstrate how these are shared with the public.</li><li>How the strategy addresses resilience equitably, particularly for communities most impacted by such concerns?</li><li>Demonstrate how these were evaluated.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Has the agency demonstrated that it has established strategies and/or practices related to sustainability and environmental resilience goals?</li><li>Did the agency demonstrate how these have been shared with the public?</li><li>Did the agency demonstrate how these address resilience equitably?</li><li>Did the agency demonstrate how these were evaluated?</li></ul></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CH 4 – condensed pattern continues -->
+<section id="ch4">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 4 &mdash; Human Resources Planning, Workforce Development, and Culture</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>To produce the level of quality that customers have come to expect, organizations must employ qualified employees. Qualified personnel bring to the organization the knowledge, skills, and abilities in specialized areas that are needed to design and deliver the benefits that customers seek from recreation and park experiences. A well-prepared personnel policies and procedures manual provides a consistent road map for human resources decision making as well as standardized procedures.</p></details></div>
+
+  <div class="standard fundamental" data-std="4.1" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.1</span><span class="std-title">Human Resource Planning, Workforce Development, and Culture</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">There shall be a designated position (individual) or team responsible for the agency's Human Resource functions. The agency shall engage their employees to evaluate their perceptions and perspectives of the quality of the agency's human resources, workforce composition, professional development and/or organizational culture, to inform decision-making.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a narrative description of the overall human resource planning strategy utilized by the agency.</li><li>Provide the job description and relevant education/experience for the position(s) involved in human resource efforts on behalf of the agency.</li><li>Provide evidence of data collection, analysis, and decision making related to human resource planning, workforce composition, professional development, and organizational culture that consistently improve service delivery as well as enhance employee work environment and job satisfaction.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency explain their human resource planning strategy?</li><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Human Resources activities showing they are qualified to perform these duties?</li><li>Did the agency provide evidence of collected and analyzed data that has informed decisions made related to human resources planning, workforce composition, professional development, and/or organizational culture?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard fundamental" data-std="4.2" data-fund="true">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.2</span><span class="std-title">Personnel Policies and Procedures Manual</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">The agency shall have created and made internally available to staff a Personnel Policies and Procedures Manual that contains both legally required and agency-specific employment information. The Manual shall include specific and transparent codes of ethics or similar expectations consistent with the agency's mission and core values. The Manual shall be a 'living' and dynamic document that is current, accurate, and systematically and regularly reviewed with updates or revisions made as appropriate.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide Personnel Policies and Procedures Manual including: date of adoption by the agency's approving authority, date of last review, code of ethics, standards related to the acceptance of gifts and gratuities by staff, benefits, equitable and diverse recruitment, selection and hiring with background investigation (unless prohibited by law), evaluation, dismissal, separation, grievances, and equal-opportunity employment practices.</li><li>If appropriate, provide a narrative expressing changes made to the Manual since the last accreditation review.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a Personnel Policies and Procedures Manual that includes all the required elements listed in the Evidence of Compliance?</li><li>If the agency has made changes to the manual since the last accreditation review, has the agency provided a narrative describing those changes?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="4.3" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.3</span><span class="std-title">Compensation Plan</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">There shall be an established compensation plan that ensures fair compensation among units within the agency that is reviewed periodically. The compensation plan shall take into account agency employment standards, agency skill needs, and compensation levels offered by other local employers.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide the compensation plan and a copy of its most recent review or update. Agencies may choose to participate in centralized compensation studies, utilize salary surveys from state associations, conduct internal reviews and adjustments of compensation, or other methods appropriate to the agency.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence that a compensation plan has been established that provides fair compensation among units within the agency?</li><li>Has the plan been periodically reviewed?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="4.4" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.4</span><span class="std-title">Employee Performance Evaluation and Supervision</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall implement a comprehensive system of employee supervision and performance evaluation that is designed to achieve agency goals and objectives. This system of performance documentation shall be based on job descriptions, team competencies, and actionable goals.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide the policy and procedures outlining the systematic performance evaluation system.</li><li>Detail how this system connects agency mission, vision, values, and strategic objectives into the performance evaluation system.</li><li>Provide evidence of implementation and communication to and with employees on performance review and improvement.</li><li>If unionized, provide the agreed-upon performance evaluation system that applies to covered employees.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide policy and procedures outlining the systematic performance evaluation system?</li><li>Has the agency demonstrated that the evaluation system is aligned with the agency's mission, vision, values, and strategic plan?</li><li>Did the agency provide evidence of implementation and communication with employees?</li><li>If unionized, has the agency provided information related to the agreed upon performance evaluation system that applies to covered employees?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="4.5" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.5</span><span class="std-title">Onboarding Processes (Orientation and Training)</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">The agency shall provide employee onboarding/orientation processes and activities for new employees that include an introduction to the agency's Mission, Vision, Values, culture, and key performance objectives. Current and continuous job training, instruction, and mentorship efforts shall extend beyond the initial orientation to comprise a full onboarding experience.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide outline of the onboarding/orientation program and a representative example of materials distributed.</li><li>Provide a description of the onboarding process that extends beyond the initial orientation.</li><li>Provide a narrative detailing an evaluation of the onboarding activities with examples of recent evaluation of trainings (qualitative and quantitative) completed by the agency, including curriculum content, training dates and participant lists.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide an outline of the onboarding/orientation program is in place and utilized?</li><li>Did the agency provide representative example of materials distributed?</li><li>Does the implemented onboarding program extend beyond the initial orientation?</li><li>Has the agency demonstrated that it evaluates its onboarding program?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="4.6" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.6</span><span class="std-title">Employee Development and Training Program</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Opportunities shall be provided to employees at all levels within the agency that continue to improve and enhance individual performance, leadership-succession planning and agency service delivery.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Describe the goals of the Employee Development and Training Program.</li><li>Provide the scope and components of the Program, an outline of training offered (mandatory and discretionary), and a sampling of lists of participants for the previous five years. If seeking initial accreditation, a minimum of one year of evidence is required.</li><li>Provide evidence of training for all employees including upper-level supervisors, support for ongoing education and achievement of workforce development, leadership-succession planning and certification objectives.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency describe the goals of the employee development and training program?</li><li>Did the agency provide the scope and components of the program, including both mandatory and optional training?</li><li>Are training opportunities and a sampling of participant lists provided as evidence of ongoing implementation? Sampling requirements are based on initial (evidence within the previous 1 year) or reaccreditation (evidence within the previous 5 years).</li><li>Has the agency demonstrated that its program offers development opportunities for employees in multiple levels of the organization's structure?</li><li>Has the agency demonstrated that the program supports leadership succession and certification objectives?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="4.7" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.7</span><span class="std-title">Professional Certification and Organization Membership</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall encourage and, where possible, provide 'time off' or financial assistance to enhance and develop employee acumen, ensure employees invest in a culture of lifelong learning, stay abreast of the most up-to-date best practices for the field, and create a network of high-performing peer professionals.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide a comprehensive list of staff with professional certifications and those who have actively participated in a professional organization during the prior accreditation review period, indicating the nature of participation.</li><li>Provide a narrative describing how opportunities are afforded to a wide array of staff from various levels within the organization. Examples include CPRP, CPRE, CTRS, AFO, etc.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a comprehensive list of staff that includes their professional credentials and participation in professional development and association activities?</li><li>Did the agency describe how opportunities are provided to a variety of levels of staff for professional certification and participation in organization memberships?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="4.8" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.8</span><span class="std-title">Workforce Health and Wellness Program</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">Agencies shall provide an employee health and wellness program. The program shall be periodically evaluated to ensure the program meets agency goals and objectives for the program.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide evidence of the agency's employee health and wellness program, level of participation, and most recent evaluation.</li><li>Provide a narrative describing the goals of the program and any decisions made informed by results of the periodic evaluation.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence of a workforce health and wellness program?</li><li>Has the program been evaluated?</li><li>Did the agency describe how the program has goals and objectives?</li><li>Did the agency describe how results of the evaluation informed changes (or no changes) to the program?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="standard" data-std="4.9" data-fund="false">
+    <div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">4.9</span><span class="std-title">Volunteer Management</span><span class="chevron">▾</span></div>
+    <div class="standard-body">
+      <p class="standard-text">There shall be a designated team or individual responsible for the agency's volunteer management functions. This person/team shall provide strategy and technical expertise in relation to recruitment, selection, training, management, evaluation, and recognition of volunteers.</p>
+      <div class="section-label">Required Evidence of Compliance</div>
+      <ul class="eoc-list"><li>Provide the position description for the person(s) responsible for volunteer management functions.</li><li>Provide a narrative describing the goals and objectives of the volunteer program.</li><li>Provide the volunteer management manual used by the agency or the volunteer handbook provided to volunteers that includes: a list of functions in which the agency uses volunteers; volunteer recruitment, selection, background investigation, orientation, training, and retention expectations; processes used to supervise and evaluate volunteers; recognition of volunteer contributions.</li><li>Provide evidence of recent evaluation of the program and adjustments made informed by evaluation.</li><li>Provide evidence of background-check administration in compliance with volunteer background-check policies promulgated by the agency and evidence of volunteer liability coverage provided by the agency.</li><li>If unionized, provide a narrative demonstrating how the agency is addressing the division between union and volunteer responsibilities.</li></ul>
+      <div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Volunteer Management activities showing they are qualified to perform these duties?</li><li>Did the agency describe the goals and objectives for its volunteer program?</li><li>Did the agency provide a volunteer manual that includes all required elements listed in the Evidence of Compliance?</li><li>Did the agency provide recent evaluation of the volunteer program?</li><li>Did the agency describe how the results of the evaluation were reviewed to better meet volunteer program goals and objectives?</li><li>Did the agency provide evidence that background check procedures are in place and agency staff administer background checks in compliance with policy?</li><li>If unionized, has the agency demonstrated how volunteer responsibilities are distinguished from unionized roles?</li></ul></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CH 5 -->
+<section id="ch5">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 5 &mdash; Financial Management, Responsibility, and Accountability</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>Financial management is the process of planning for, acquiring, and using funds to achieve predetermined organizational goals and objectives. Parks and recreation managers must possess the ability to secure, organize, and control the financial resources of the organization to ensure the success and survival of their organizations. Formal fiscal control and monitoring procedures enable an agency to establish accountability, comply with funding authorizations and restrictions, ensure that disbursements are for designated and approved purposes, and alert agency management to possible problems.</p></details></div>
+
+  <div class="standard fundamental" data-std="5.1" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.1</span><span class="std-title">Financial Management, Responsibility and Accountability</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be a designated position (person) or team responsible for the agency's Financial Management, Responsibility and Accountability. This person/team shall provide strategies and technical expertise in relation to financial management, accountability, and planning for and using funds to achieve predetermined agency goals and objectives.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>There shall be a narrative description of the overall financial management strategy utilized by the agency.</li><li>Provide the job description and relevant education/experience for the position(s) involved in financial management on behalf of the agency.</li><li>Describe how the agency incorporates fairness and accessibility management principles into these fiscal strategies, unless prohibited by state law or local ordinance.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a narrative that describes its overall financial strategy?</li><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Financial Management activities showing they are qualified to perform these duties?</li><li>Did the agency explain how fairness and accessibility principles are incorporated into their financial strategies?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="5.2" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.2</span><span class="std-title">Legal Authority and Fiscal Policy</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency shall have a defined legal authority for fiscal matters and fiscal policies approved by the body having legal authority. Both are distributed and followed by the approving authority and staff.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide a narrative describing how legal fiscal authority is derived.</li><li>Provide a summary of fiscal policies, such as those pertaining to segregation of funds, fund balance and reserve requirements, philosophical use of taxpayer funds, etc.</li><li>Describe how policies are shared with new members of the approving authority and staff.</li><li>Provide evidence that fiscal policies and procedures have been established and are being followed.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a narrative that explains how its legal fiscal authority is established (e.g. charter, ordinance enabling legislation)?</li><li>Was a summary of fiscal policies requested in the Evidence of Compliance provided?</li><li>Did the agency describe how fiscal policies are shared with new members of the approving authority and staff?</li><li>Did the agency provide evidence verifying that policies and procedures are in place and being followed?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="5.3" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.3</span><span class="std-title">Comprehensive Revenue Policy</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be an established fee policy, periodically updated, regarding fees and charges for programs, services, and admissions. The strategies and methodologies for fees/charges-setting and cost recovery shall be transparent and consistent with the agency's mission and core values.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the policy and/or directing documents on fees and charges, the current fee schedules or cost-recovery procedures, and the most recent review or update.</li><li>Provide evidence that the policy is administered, ensuring compliance with the approving authority's cost-recovery direction.</li><li>Resource allocation strategy procedures shall also be included.</li><li>Scholarship policies should be included if applicable.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide policy and/or directing documents on fees and charges, the current fee schedules or cost-recovery procedures?</li><li>Did the agency provide evidence of the most recent review or update of fees and charges?</li><li>Did the agency demonstrate that the cost recovery policy is being implemented based on approving authority direction?</li><li>Did the agency provide procedures for resource allocation strategy?</li><li>If applicable, did the agency provide its scholarship or financial assistance policy?</li></ul></div></div></div>
+
+  <div class="standard" data-std="5.4" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.4</span><span class="std-title">Grants and Alternative Funding Strategies</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency may be able to leverage taxpayer dollars for the benefit of the community by seeking grants and alternative funding sources for projects and services. Policies and procedures should be established to guide the agency. Grants and alternative funding sought should be aligned with agency priorities and managed diligently.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the policy and procedure for managing grants and alternative funding sources as well as evidence of compliance with grant management and reporting requirements.</li><li>Provide the policy for solicitation and management of private, corporate and non-profit support.</li><li>Provide evidence of the review and consideration of grant and alternative funding-source opportunities that result in received support which furthers the mission, vision, and strategic priorities of the agency.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a policy and/or procedure that outlines how grants and alternative funding sources are managed and reported?</li><li>Did the agency provide a policy for solicitation and management of private, corporate and nonprofit support?</li><li>Has the agency demonstrated a process for reviewing and considering grant and alternative funding opportunities that supports the priorities of the agency?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="5.5" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.5</span><span class="std-title">Financial Statements</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall analyze financial statements throughout the fiscal year to inform decisions made that ensure the sustainable operation of the agency.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide a narrative describing how financial statements (could be monthly, quarterly, or annually) are available and used to manage the budget at all levels of the agency, systematically informing agency decision making throughout the fiscal year.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency describe how financial statements and/or reports are available for review?</li><li>Did the agency describe how financial reporting supports informed decision-making throughout the fiscal year?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="5.6" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.6</span><span class="std-title">Purchasing Policy</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency establishes and implements strategic levels of purchasing authority and procurement processes, inclusive of emergency purchasing, to ensure the highest and best use of taxpayer funds.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the policy and/or procedures.</li><li>Provide a narrative outlining opportunities for staff to learn and train for best-practice procurement policies and procedures.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide its purchasing policy and/or procedures?</li><li>Did the narrative outline opportunities for staff to learn and train for procurement policies and procedures?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="5.7" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.7</span><span class="std-title">Independent Audit</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be an independent audit of the agency's fiscal activities conducted annually or at a time stipulated by applicable statute or regulation. An independent audit assures taxpayers that agency funds are properly managed and tracked.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the most recent independent audit and management letter, or most recent Annual Comprehensive Financial Report and provide the response to the audit recommendations.</li><li>Provide narrative evidence of adjustments made to accounting controls in response to audit recommendations, if applicable.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide the most recent Annual Comprehensive Financial Report and/or Audit available for review?</li><li>Did the agency provide the response to the audit recommendations?</li><li>If applicable, did the agency describe any adjustments made in response to recommendations?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="5.8" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.8</span><span class="std-title">Annual or Biennial Budget</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">A budget is a plan used to propose and approve use of funding to achieve the mission, vision, and key service delivery objectives of the agency. Staff and community input and/or review opportunities shall be provided.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide evidence that the annual or biennial budget is built in alignment with the mission, vision, and strategic priorities.</li><li>Provide evidence of the opportunity for the staff and community to participate in the budget preparation process.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence that demonstrates alignment of the budget with strategic priorities (e.g. budget message or transmittal letter describing the connection between agency priorities and budgetary investment)?</li><li>Did the agency provide evidence of public and staff participation in the budget preparation process?</li></ul></div></div></div>
+
+  <div class="standard" data-std="5.9" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.9</span><span class="std-title">Supplemental/Emergency Appropriations</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">When unforeseen events impact well-planned and executed budgets, supplemental or emergency appropriations may be required. The agency shall plan for these occurrences by developing and implementing policies to guide approval processes for changes to the approved budget.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide evidence describing a recent example of supplemental and/or emergency appropriations, which may have required budget amendment, followed by the approved process.</li><li>If there has not been a need for such a budget adjustment, provide documentation of the approved process or policy to follow when necessary.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>If applicable, did the agency provide a recent example of a supplemental or emergency appropriation and the steps followed to approve it?</li><li>Did the agency provide documentation of an approved process or policy for emergency appropriations to follow when necessary?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="5.10" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">5.10</span><span class="std-title">Capital Asset Management</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall maintain capital asset depreciation and replacement schedules covering facilities, playgrounds, pavilions, fleet, etc., assisting the agency in efficiently maintaining continuity of operations and ensuring customer service standards are met.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the capital asset depreciation and replacement schedule.</li><li>Provide evidence that the replacement schedule has forecasted future expenditures to sufficiently fund future replacements.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a capital asset depreciation and replacement schedule?</li><li>Did the agency provide the replacement schedule that includes forecasted future expenditures to sufficiently fund future replacements?</li></ul></div></div></div>
+</div>
+</section>
+
+<!-- CH 6 -->
+<section id="ch6">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 6 &mdash; Programs and Services Management</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>A program delivers recreation and leisure benefits to participants. High-quality programming is a dynamic process. Programming should be intentional and evidence-based to justify that resources are being used effectively and efficiently. The Recreation Program Plan (RPP) includes all elements and services of the public park and recreation agency's programming functions, including activity selection, type and scope of programs and outreach initiatives. Programs cover the three behavior domains: psychomotor, affective, and cognitive.</p></details></div>
+
+  <div class="standard fundamental" data-std="6.1" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">6.1</span><span class="std-title">Recreation Program Responsibility and Accountability</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be a designated position (individual) or team responsible for the agency's Recreation Programs and Services. This person/team shall provide strategies, community collaboration approaches, and technical expertise in relation to recreation programs offered to achieve predetermined agency goals and objectives.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the job description and relevant education/experience for the position(s) involved in recreation program management on behalf of the agency.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Recreation Program activities showing they are qualified to perform these duties?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="6.2" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">6.2</span><span class="std-title">Program and Service Determinants (Components)</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">A strategic, systematic, and collaborative approach shall be taken in determining what programs and services shall be provided by the agency. Ensure staff are trained to develop programs and services using a determinants system based on the six program and service determinants AND informed by regular public engagement or a needs assessment.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Demonstrate recurring staff training with an outline and dated sign-in sheet for the most recent training.</li><li>Provide documentation and examples demonstrating that six (6) program and service determinants are used in providing strategically managed programs and services:
+    <ul class="sub-list"><li>1. Conceptual foundations of play, recreation, and leisure</li><li>2. Organizational agency philosophy, mission and vision, and goals and objectives</li><li>3. Constituent interests and desired needs, including those of under-resourced communities and previously left out populations</li><li>4. Creation of a constituent-centered culture (provide evaluations of at least 5 programs from a variety of program areas)</li><li>5. Experiences desirable for clientele</li><li>6. Community opportunities</li></ul>
+  </li><li>Note: Items 1, 2, 3, 5 and 6 should be submitted in the form of a matrix.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence of staff training on the six program and service determinants?</li><li>Did the agency provide a matrix/spreadsheet answering the items identified in 1, 2, 3, 5 and 6?</li><li>Did the agency provide evaluations from at least 5 programs from a variety of program areas and how the evaluations impacted decision-making?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="6.3" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">6.3</span><span class="std-title">Recreation Program Plan (RPP)</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency shall have a Recreation Program Plan (RPP) that furthers the implementation of the recreation and leisure objectives of the Park and Recreation Master Plan and Strategic Plan, that is reviewed and updated minimally every three (3) years, and that addresses the lifecycle (develop, assess, and improve or discontinue) of all leisure and recreation programs and services delivered by the agency.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide Recreation Program Plan including:
+    <ul class="sub-list"><li>Cover page, date of approval, table of contents, introduction</li><li>Matrix of current programs indicating the target audience</li><li>Annual action plans showing program objectives in SMART format (specific, measurable, achievable, realistic, time-bound) for each year</li><li>Description or diagram of the processes used to plan, develop, assess and evaluate new and existing programs</li></ul>
+  </li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a complete RPP (based on the Evidence of Compliance)?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="6.4" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">6.4</span><span class="std-title">Program Evaluation – Staff Training &amp; Use in Informing Programmatic Decision Making</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency shall provide training on how to evaluate programs, services and facilities for personnel involved in managing facilities and delivering programs and services. Agencies shall review evaluations and make programmatic decisions based on evaluation results.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide examples of recent evaluation trainings completed by the agency, including curriculum content, training dates and participant lists.</li><li>Provide evidence that programs conducted are making progress toward outcomes desired.</li><li>Provide evidence that programmatic decision-making is informed by evaluation results.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide recent evaluation trainings based on the Evidence of Compliance?</li><li>Did the agency provide evidence that programs are making progress toward desired outcomes?</li><li>Does the agency make programming decisions based on evaluation results?</li></ul></div></div></div>
+
+  <div class="standard" data-std="6.5" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">6.5</span><span class="std-title">Cooperative Recreation Programming</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies often partner with other organizations to deliver programs or services to the community. Such collaboration or cooperation shall be documented via formal agreement.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide current examples of cooperative programming with documentation, such as Memoranda of Understanding (MOU), Memoranda of Agreement (MOA), or partnership agreements.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide examples of cooperative programming services?</li></ul></div></div></div>
+
+  <div class="standard" data-std="6.6" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">6.6</span><span class="std-title">Piloting New Programs and Services</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall seek to understand the community's needs and preferences for recreational programs and services by piloting new or trial programs. These piloted programs shall be evaluated to understand participant outcomes, satisfaction, and interest for continuing participation in similar programs and services.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide examples of new or trial programs or services employed by the agency.</li><li>Provide a narrative describing the evaluative process, results, and subsequent decision making informed by ongoing evaluation results.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence of pilot programs?</li><li>Did the agency describe the evaluation process, results and any decision-making from the pilot programs?</li></ul></div></div></div>
+</div>
+</section>
+
+<!-- CH 7 -->
+<section id="ch7">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 7 &mdash; Facilities and Land Use Management</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>Resource planning is a process focusing on natural and physical resources. The planning, development and management of physical resources are functions of all park and recreation managers. Ready access to accurate land and facility records is a basic requirement for program planning and facility management. High-performing maintenance operations organizations ensure quality experiences through well-managed spaces and places.</p></details></div>
+
+  <div class="standard fundamental" data-std="7.1" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">7.1</span><span class="std-title">Facility and Land Use Responsibility and Accountability</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be a designated position (individual) or team responsible for the agency's facilities and land use functions. This person/team shall provide planning strategy and technical expertise in relation to facilities and land use functions.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide a narrative description of the overall facilities and land use management strategy utilized by the agency.</li><li>Provide the job description and relevant education/experience for the position(s) involved in facilities and land use management efforts on behalf of the agency.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency describe the overall facility and land use management strategy?</li><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Facilities and Land Use Management activities showing they are qualified to perform these duties?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="7.2" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">7.2</span><span class="std-title">Park and Recreation Land Acquisition and Disposal</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall have established and implemented park land acquisition and disposal policies and procedures. These strategies for achieving park, recreation, conservation, and historical-cultural goals and purposes shall protect the public's investment in and enjoyment of public properties.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the policy(ies) established that govern procedures followed to acquire or dispose of parkland, including citation of legal authority over final decision making.</li><li>Provide a narrative describing how the agency acquires lands and facilities in conformance with the Park Master Plan and strategic objectives. Provide evidence that the most recent acquisition complied with these policies and procedures, if within the last 10 years.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a policy that governs the procedures of acquisition or disposal of parkland?</li><li>Did the agency provide a policy that includes citation of legal authority over final decision making?</li><li>Did the agency describe how potential acquisitions tie into the master plan and strategic objectives, including any requirements for public engagement opportunities, bidding, etc.?</li><li>Did the agency provide documentation from the last acquisition, if within the last 10 years?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="7.3" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">7.3</span><span class="std-title">Park and Recreation Property Development</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall have established and implemented park land development policies and procedures. These strategies for achieving park, recreation, conservation, and historical-cultural goals and purposes shall protect the public's investment in and enjoyment of public facilities.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the policy(ies) established that govern procedures followed to plan and develop parkland, including citation of legal authority over final decision making.</li><li>Provide a narrative describing how the agency develops lands and facilities in conformance with the Park Master Plan and strategic objectives.</li><li>Provide evidence that the most recent development project complied with these policies and procedures.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a policy that governs the procedures followed to plan and develop parkland, including citation of legal authority over final decision making?</li><li>Did the agency describe how the agency develops lands and facilities in conformance with the Park Master Plan and strategic objectives, including any requirements for public engagement opportunities, bidding, post-acquisition, etc.?</li><li>Did the agency provide evidence that the most recent development project complied with these policies and procedures?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="7.4" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">7.4</span><span class="std-title">Maintenance and Operations Management</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall set specific maintenance standards for parks, facilities, and special areas to ensure maintenance efforts reflect community preferences. Standards shall be used to develop maintenance and inspection schedules.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the established maintenance standards and plan for parks, facilities and specialty areas, including evidence of park maintenance classification according to the intended use of the area, ranging from heavily used and highly developed areas to those that are lightly used and less developed.</li><li>Provide the most recent review or update of the standards, within the last five (5) years.</li><li>Provide a narrative addressing implementation of the plan including, if applicable and available, quality assurance measures, reports and/or results.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide the established maintenance standards (based on the Evidence of Compliance)?</li><li>Did the agency provide the most recent review or update of the maintenance standards and was it within the past 5 years?</li><li>Did the agency describe how they are implementing the plan?</li></ul></div></div></div>
+
+  <div class="standard" data-std="7.5" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">7.5</span><span class="std-title">Preventative Maintenance Plan</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall consider employee and patron safety, continuity of operations, and life cycle costs of operating mechanical systems, facilities, and equipment and shall develop written plans outlining procedures, tracking, and decision-making tools.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the preventative maintenance plan and examples of detailed procedures for identified parks, recreation areas and facilities with special attention given to playground equipment, aquatic facilities, pedestrian pathways, building infrastructure and other high impact assets.</li><li>Provide evidence of completed (i.e. work orders), recent inspections and safety checks for a minimum of 3 separate facilities/areas.</li><li>Demonstrate how these inspections results are used by the agency in decision-making related to staff assignments, replacement cycles, allocation of resources, and the like.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide the preventative maintenance plan(s) and procedures, including examples, as outlined in the Evidence of Compliance?</li><li>Did the agency provide completed inspections and safety checks for a minimum of 3 separate facilities/areas?</li><li>Did the agency demonstrate how the results of the inspections are used in decision making?</li></ul></div></div></div>
+
+  <div class="standard" data-std="7.6" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">7.6</span><span class="std-title">Fleet Management Plan</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Fleet management planning results in efficient and effective use of taxpayer funding as well as safe operation of equipment by staff. Agencies shall have a plan for maintenance and replacement of vehicles and rolling equipment.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide fleet management plan.</li><li>Provide evidence of implementation of the plan, could be inspections, maintenance records kept, etc.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide the Fleet Management Plan?</li><li>Did the agency provide evidence of implementation of the plan?</li></ul></div></div></div>
+
+  <div class="standard" data-std="7.7" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">7.7</span><span class="std-title">Natural Resource Management</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies managing parks and open space properties shall have implemented natural resource management plans that protect the environment.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the natural resource management plan(s) and procedures as applicable.</li><li>Provide examples of outreach and education to the community on practices that protect these natural resources.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide the Natural Resource Management Plan and procedures?</li><li>Did the agency provide examples of outreach and education to the community on how they protect natural resources?</li></ul></div></div></div>
+</div>
+</section>
+
+<!-- CH 8 -->
+<section id="ch8">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 8 &mdash; Law, Risk Management, Safety, and Security</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>Laws and ordinances provide the foundation for controlling activities and behavior within the jurisdiction of the agency. A comprehensive risk management plan is essential to minimize legal liabilities and personal injuries. The agency shall implement approaches for identification and control of risks based on the specific needs of the agency. Risk management is an on-going process that must be systematically evaluated for effectiveness and adjustments made as appropriate.</p></details></div>
+
+  <div class="standard fundamental" data-std="8.1" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.1</span><span class="std-title">Risk Management Responsibility and Strategy</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be a designated person or team responsible for the agency's Risk Management functions. This position/team shall lead the agency in implementation of risk management strategies following a risk identification/strategy development/evaluation/repeat cycle.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the job description and relevant education/experience for the position(s) involved in risk management on behalf of the agency.</li><li>Provide a narrative describing how risks are identified, assessed, and managed/transferred, including but not limited to facility inspection systems and pre-program risk assessments.</li><li>Provide the most recent risk assessment data report.</li><li>Provide recent evidence of up to two changes to policy, procedure, or practice made as a result of the risk management process, if changes are made.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Risk Management activities showing they are qualified to perform these duties?</li><li>Did the agency describe how risks are identified, assessed and managed?</li><li>Did the agency provide the risk assessment data report?</li><li>If changes were made, did the agency provide evidence of changes to policy, procedure or practice as a result of risk management process?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="8.2" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.2</span><span class="std-title">Codes, Laws, Ordinances, Policies, and/or Rules</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be codes, laws, ordinances, policies, and/or rules in place to protect the public's health, safety, and welfare while using agency's facilities or property.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide documentation of the codes, laws, and ordinances that pertain specifically to areas and facilities under the jurisdiction of the agency and describe how they are posted or otherwise readily available to park patrons.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide documentation of codes, laws, and ordinances that apply to areas and facilities?</li><li>Did the agency describe how the codes, laws and ordinances are readily available to park patrons?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="8.3" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.3</span><span class="std-title">General Security Plan</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall have documented a general security plan and procedures that may include how it intends for staff to manage lock and key systems, alarm systems, opening and closing procedures, fire alarm and fire suppression systems, and emergency evacuation procedures.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the agency's general security plan or compilation of security plans from each major area, building or facility with information on the most recent review or update.</li><li>Provide a narrative detailing how planned elements are trained. If you are unable to share plans due to security limitations, submit a redacted or summary version showing table of contents and core procedures.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a general security plan (based on the Evidence of Compliance)?</li><li>Did the agency describe how employees are trained on the general security plan?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="8.4" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.4</span><span class="std-title">Personnel Safety Training</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be ongoing and routine safety training employed by the agency and available to employees at all levels within the organization.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide evidence of staff training opportunities identified in the standard.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence of personnel safety trainings to all levels within the organization?</li></ul></div></div></div>
+
+  <div class="standard" data-std="8.5" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.5</span><span class="std-title">Disruptive Behavior</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall have established policies and enforcement procedures for the handling of disruptive behavior on agency property.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide current procedures regarding handling of disruptive behavior.</li><li>Include a narrative describing the relationship with law enforcement and roles of both agency staff and law enforcement officers in managing incidents.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide the procedure for handling disruptive behavior?</li><li>Did the agency describe the relationship and roles with law enforcement?</li></ul></div></div></div>
+
+  <div class="standard" data-std="8.6" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.6</span><span class="std-title">Event Planning and Management</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall coordinate safety and security details for special events, facilities, etc. with local law enforcement, public works, and other appropriate agencies.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide a recent example of coordination with other departments/agencies on traffic control, parking plans, crowd control, safety, and security for activities and events hosted or facilitated by the agency.</li><li>If you are unable to share event security plans, please note that and describe outside agency engagement in the process.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency demonstrate examples of coordination with outside departments and/or agencies as discussed in the Evidence of Compliance?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="8.7" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.7</span><span class="std-title">Accidents/Incidents</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall document and analyze accident/incident reports as a part of the risk identification processes.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide three accident/incident reports from each of the last five years. If seeking initial accreditation, a minimum of one year of evidence is required.</li><li>Provide a narrative describing at least three examples that demonstrate how accident/incident data informs decisions made to reduce risk after an incident or accident.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide three accident/incident reports per year (If seeking initial accreditation, over 1 year. If seeking reaccreditation, over 5 years.)?</li><li>Did the agency describe at least three examples of data-informed decision-making to reduce risk after an incident or accident?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="8.8" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.8</span><span class="std-title">Emergency Management Plan</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall have in place and practiced a plan to manage emergencies or natural disasters as they arise. Staff shall be trained on the plan and will practice scenarios intended to ensure professional response when an incident occurs.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the applicable emergency management plan with the most recent date of approval. If, due to security concerns, the emergency management plan is not available for public review, provide the emergency management plan table of contents.</li><li>Provide documentation of in-service training programs on emergency management, including a dated outline of the presentation topics and a roster of participants. In-service training and/or drill practice will be considered met if conducted at least annually.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide emergency management plan or the emergency management plan table of content (if the plan is not available for public review)?</li><li>Did the agency provide documentation of emergency management plan annual training (based on the Evidence of Compliance)?</li></ul></div></div></div>
+
+  <div class="standard" data-std="8.9" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">8.9</span><span class="std-title">Crisis Response Management</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Crises are likely events, whether they are associated with larger emergency events such as natural disasters, man-made events, or tragic accidents like accidental drownings. Agencies shall have strategies in place and a practice to mitigate further stressors in the aftermath of a crisis.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide evidence of crisis response management strategies employed by the agency. Examples of strategies may include an employee assistance program, crisis response activities, partnerships with first responders, emergency management organizations, or counseling agencies, and the like.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence of crisis management strategies (based on the Evidence of Compliance)?</li></ul></div></div></div>
+</div>
+</section>
+
+<!-- CH 9 -->
+<section id="ch9">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 9 &mdash; Marketing, Communications, and Community Engagement</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>Public information, community relations, marketing, and community engagement are complementary functions within the agency. To operate effectively, a park and recreation agency must have the support of its community. An agency can obtain such support by informing the public and news media of events that affect the lives of citizens in the community. Effective market research, planning, product and program development, strategies, and objectives for delivering demand-driven, high-quality programs and services contribute to successful park and recreation operations.</p></details></div>
+
+  <div class="standard" data-std="9.1" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">9.1</span><span class="std-title">Marketing, Communications, and Community Engagement Responsibility</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be a designated position (individual) or team responsible for the agency's Marketing, Communications, and Community Engagement functions. This person/team shall provide strategies and technical expertise in relation to marketing, communications, crisis communications, and community engagement activities conducted to achieve predetermined agency strategy related to this area of responsibility.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the job description and relevant education/experience for the position(s) involved in marketing, communications, and community engagement activities on behalf of the agency.</li><li>Provide a narrative description of marketing and communications strategy utilized by the agency. Describe how different communities are represented thoughtfully and intentionally in all aspects of marketing.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Marketing, Communications and Community Engagement activities showing they are qualified to perform these duties?</li><li>Did the agency describe the marketing and communications strategy?</li><li>Did the agency describe efforts to ensure community representation in marketing campaigns?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="9.2" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">9.2</span><span class="std-title">External Marketing and Communications</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Communications and community engagement activities shall reach a wide array of community members representative of community demographics. Changes to strategy shall be informed by evaluation of efforts. Development of relationships with the media, where possible, may be utilized to advance the agency's brand, image, and service reach.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide evidence of data collection, analysis, and decision-making related to marketing and communications functions that result in improvements in external communications and community engagement efforts that reach an audience representative of the community.</li><li>If applicable, provide a narrative describing the relationship with the media and in what ways the relationship impacts brand, image, and service reach.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence of established data collection, analysis, and decision-making process that extends external communication efforts to the community?</li><li>If applicable, did the agency describe the relationship with the media?</li></ul></div></div></div>
+
+  <div class="standard" data-std="9.3" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">9.3</span><span class="std-title">Internal Communications</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies shall establish effective internal communications strategies and tactics to ensure key information reaches employees at all levels within the organization.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide a communication matrix illustrating how internal communications are managed by the agency.</li><li>Provide the most recent evaluation of internal communications efforts.</li><li>Provide evidence of changes made to communications strategies in response to evaluation data.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide a communication matrix on how internal communications are managed?</li><li>Was the most recent evaluation of internal communications provided?</li><li>Did the agency provide evidence of changes made to communications strategies in response to evaluation data?</li></ul></div></div></div>
+
+  <div class="standard" data-std="9.4" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">9.4</span><span class="std-title">Communicating the Essentiality and Impact of Leisure Programs and Services (Advocacy)</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency shall have an ongoing and systematic process to educate the general population and elected officials about the benefits, values, outcomes, and positive impacts of leisure and recreation services provided. Communication shall begin and continue to establish the essentiality of agency services and be periodically evaluated for effectiveness.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide examples of the methods utilized by the agency to educate and inform the community and/or elected officials on the benefits, values, outcomes, and impacts of leisure and recreation services to a wide array of participants and non-participants.</li><li>Provide the last review (qualitative and/or quantitative) of effectiveness of these advocacy efforts.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide evidence of methods utilized by the agency to educate and inform the community and/or elected officials on the benefits, values, outcomes and impacts of leisure and recreation services?</li><li>Did the agency provide the last review of these efforts?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="9.5" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">9.5</span><span class="std-title">Community Engagement</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Community engagement techniques are used by agencies to invite the community to influence agency strategic direction, facility and amenity improvements, and programming. Engaging the community regularly builds relationships, trust, and helps ensure the agency is attuned to and addressing the needs of the community. Agencies shall have implemented thoughtful strategies to engage and involve the community on a regular basis.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide a narrative describing community engagement strategies employed by the agency to regularly connect with members of the community in an effort to better understand their needs for park and recreation services.</li><li>Describe how engagement is adjusted based on the specific community the agency is trying to reach.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency describe community engagement strategies (based on the Evidence of Compliance)?</li><li>Did the agency describe how engagement is adjusted based on the specific communities being reached?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="9.6" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">9.6</span><span class="std-title">Crisis Communications</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Provide agency strategies and/or protocols developed for managing internal and external communications during a crisis situation. Provide evidence that appropriate staff have been trained on these strategies and/or protocols.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide agency strategies and/or protocols developed for managing internal and external communications during a crisis situation.</li><li>Provide evidence that appropriate staff have been trained on these strategies and/or protocols.</li><li>Provide three communication templates (e.g., press releases, staff talking points, public alerts, social media posts) and a timeline outlining how and when communication is delivered during various phases of a crisis.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide strategies, procedures and/or protocols for crisis communication (internal and external)?</li><li>Did the agency provide evidence of staff training on the crisis communication strategies?</li><li>Did the agency provide three communication templates and a timeline outlining how and when communication is delivered during various phases of a crisis?</li></ul></div></div></div>
+</div>
+</section>
+
+<!-- CH 10 -->
+<section id="ch10">
+<div class="chapter">
+  <div class="chapter-header"><h2>Chapter 10 &mdash; Evaluation, Assessment, and Research</h2></div>
+  <div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>The skills to assess and evaluate are essential to compete successfully for external and internal resources. Evaluation, assessment or performance measurement, and research are systematic processes that park and recreation professionals use to better understand the impacts of their efforts on the communities they serve. Establishing standards and measuring progress in attaining those standards is a basic business-planning tool. NRPA developed Park Metrics, which is the only national benchmarking tool for the park and recreation profession.</p></details></div>
+
+  <div class="standard" data-std="10.1" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">10.1</span><span class="std-title">Evaluation, Assessment, and Research Responsibility</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">There shall be a designated position (individual) or team responsible for the agency's Evaluation, Assessment, and Research. This person/team shall provide strategies and technical expertise in relation to research, data collection, data analysis, and the development of action plans from the data collected.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide the job description and relevant education/experience for the position(s) involved in evaluation, assessment, and research activities on behalf of the agency.</li><li>Provide examples of recent evaluation, assessment and research training completed by the individual and agency, including curriculum content, training dates and participant lists.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Evaluation, Assessment, and Research activities showing they are qualified to perform these duties?</li><li>Did the agency provide examples of recent evaluation, assessment or research training (based on the Evidence of Compliance)?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="10.2" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">10.2</span><span class="std-title">Systematic Data Collection</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">Agencies cannot fully meet community needs without collecting data for programs, services and operations they manage. Data shall be collected that supports the day-to-day operational aspects of an agency (recreation, parks, aquatics, etc.) Data collected should be aligned with various planning documents such as the Recreation Programming Plan, Strategic Plan, or other Business/Operational plans.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide a description of recent needs assessments conducted (e.g., surveys, focus groups, stakeholder interviews).</li><li>Provide documentation and examples demonstrating that needs assessments are conducted on a routine basis.</li><li>Provide documentation of community demographic data and user population trends.</li><li>Provide an inventory of existing parks, facilities, and services (including those provided by partners).</li><li>Provide reports or tools used to track national and local recreation trends.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide recent needs assessments conducted (e.g. surveys, focus groups, interviews)?</li><li>Did the agency provide documentation and examples that needs assessments are conducted on a routine basis?</li><li>Did the agency provide documentation of community demographic data and user population trends?</li><li>Did the agency provide an inventory of existing parks, facilities and services including those provided through partnerships?</li><li>Did the agency provide examples of reports or tools used to track national and local recreation trends?</li></ul></div></div></div>
+
+  <div class="standard fundamental" data-std="10.3" data-fund="true"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">10.3</span><span class="std-title">Systematic Data Analysis and Action</span><span class="f-badge">★ Fundamental</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency shall at a minimum, no less than once every five years, evaluate needs assessment data with available assets (e.g. land, facilities, programs, funding), and trends, to identify existing and projected gaps in service or programming and determine/reassess priorities for land acquisition, facility development and service expansion. When feasible, the agency should also benchmark its programs, services, and facilities using NRPA's Park Metrics database.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>Provide benchmarking comparisons of the agency's programs, services, and facilities with local community assets, when feasible, using NRPA's Park Metrics.</li><li>Provide analysis or summary of service gaps based on collective data and community input and documentation of action steps taken in response to findings.</li><li>Provide prioritized list of improvements or investments based on gap analysis and an analysis of how these trends relate to the agency and its community (at minimum every five years).</li><li>Describe the identification of outcomes and evidence of improvements or changes in service delivery made as a result of the needs-assessment and trends analysis process.</li><li>Provide at least one report that summarizes the data collected and action taken because of the results found.</li><li>Provide evidence of presentation of at least one report to approving authority/policy body.</li><li>Provide evidence of evaluation process review to identify strengths and weaknesses of the process. Include documentation of the resulting action plan for improvement and status updates on improvements prescribed.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide benchmarking comparisons of its programs, services and facilities with local community assets, using NRPA's Park Metrics when feasible?</li><li>Did the agency provide an analysis or summary identifying service gaps based on collective data and community input and document the action steps taken in response to findings?</li><li>Did the agency provide a prioritized list of improvements or investments based on gap analysis of how these trends relate to the agency and its community (at minimum every five years)?</li><li>Did the agency describe the identification of outcomes and evidence of improvements or changes in service delivery made as a result of the needs assessment and trend analysis?</li><li>Did the agency provide at least one report summarizing data collected and action taken based on results found?</li><li>Did the agency provide evidence that at least one report was presented to the approving authority or policy body?</li><li>Did the agency provide evidence of evaluation process review?</li></ul></div></div></div>
+
+  <div class="standard" data-std="10.4" data-fund="false"><div class="standard-header" onclick="toggle(this)" aria-expanded="false"><span class="std-num">10.4</span><span class="std-title">Investigation and Evidence Based Decision-Making/Educational Projects</span><span class="chevron">▾</span></div><div class="standard-body"><p class="standard-text">The agency shall conduct or participate in research projects that help develop, evaluate and test new programs, processes or facilities, or may collaborate with educational institutions to advance the park and recreation profession through student-learning projects and/or evidence-based programs. This standard requires a project to be completed once every five (5) years.</p><div class="section-label">Required Evidence of Compliance</div><ul class="eoc-list"><li>The agency shall participate in at least one research or student-learning project within the past five (5) years. Summarize each investigation or project within the narrative.</li><li>Provide a report outlining the research or project goals, process, and outcomes for each investigation, project or evidence-based program.</li><li>Where feasible, data-informed decisions made by the agency shall be described. There should be some documented effort to examine the impacts of different levels of service across the community.</li></ul><div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list"><li>Did the agency provide documentation and description of a research investigation or educational project within the last five years?</li><li>Did the agency provide a report provided outlining, at minimum, the project goals, process, and outcomes?</li><li>If applicable, did the agency provide documentation of a change that resulted from the resulting project data?</li></ul></div></div></div>
+</div>
+</section>
+
+</main>
+
+<footer style="text-align:center;padding:20px;font-size:.8rem;color:var(--gray-400);border-top:1px solid var(--gray-200);margin-top:20px;">
+  2027 CAPRA National Accreditation Standards &nbsp;|&nbsp; Revised August 2025 &nbsp;|&nbsp; NRPA Commission for Accreditation of Park and Recreation Agencies
+</footer>
+
+<script>
+// ── Toggle standard open/close ──
+function toggle(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.setAttribute('aria-expanded', !isOpen);
+}
+
+// ── Expand all checkbox ──
+document.getElementById('expand-all').addEventListener('change', function() {
+  document.querySelectorAll('.standard-body').forEach(b => {
+    b.classList.toggle('open', this.checked);
+  });
+  document.querySelectorAll('.standard-header').forEach(h => {
+    h.setAttribute('aria-expanded', this.checked);
+  });
+});
+
+// ── Fundamental only filter ──
+document.getElementById('fund-only').addEventListener('change', function() {
+  document.querySelectorAll('.standard').forEach(s => {
+    const isFund = s.dataset.fund === 'true';
+    s.classList.toggle('hidden', this.checked && !isFund);
+  });
+  updateCount();
+});
+
+// ── Search ──
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('.standard').forEach(s => {
+    if (!q) { s.classList.remove('hidden'); return; }
+    const text = s.textContent.toLowerCase();
+    const match = text.includes(q);
+    s.classList.toggle('hidden', !match);
+    if (match && q) {
+      s.querySelector('.standard-body').classList.add('open');
+      s.querySelector('.standard-header').setAttribute('aria-expanded', true);
+    }
+  });
+  updateCount();
+});
+
+function updateCount() {
+  const visible = document.querySelectorAll('.standard:not(.hidden)').length;
+  const total = document.querySelectorAll('.standard').length;
+  const el = document.getElementById('search-count');
+  el.textContent = visible < total ? `Showing ${visible} of ${total} standards` : `${total} standards`;
+}
+
+// ── Active nav highlight on scroll ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a[data-section]');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === entry.target.id));
+    }
+  });
+}, { rootMargin: '-30% 0px -65% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// ── Smooth scroll for nav links ──
+navLinks.forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(a.dataset.section);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+updateCount();
+</script>
+</body>
+</html>
