@@ -151,12 +151,7 @@
   </ul>
 </nav>
 
-<div class="search-bar">
-  <input type="search" id="search" placeholder="Search standards, keywords, EOC…" aria-label="Search standards">
-  <label><input type="checkbox" id="fund-only"> Fundamental only</label>
-  <label><input type="checkbox" id="expand-all"> Expand all</label>
-  <span id="search-count"></span>
-</div>
+
 
 <main>
 
@@ -872,7 +867,8 @@ function updateCount() {
   el.textContent = visible < total ? `Showing ${visible} of ${total} standards` : `${total} standards`;
 }
 
-// ── Active nav highlight on scroll ──
+// ── Init on DOM ready (handles Jekyll theme wrapper delay) ──
+function init() {
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('nav a[data-section]');
 
