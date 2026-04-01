@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAPRA 2027 – Standards &amp; Compliance Evaluator</title>
+<style>
+:root {
+  --teal:#0e6b6b;--teal-light:#e6f4f4;--teal-dark:#084e4e;
+  --gold:#c8952a;--gold-light:#fdf5e6;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;
+  --gray-400:#9ca3af;--gray-600:#4b5563;--gray-800:#1f2937;
+  --radius:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:var(--gray-800);background:var(--gray-50);line-height:1.6;}
+
+/* HEADER */
+header{background:var(--teal-dark);color:#fff;padding:20px 24px 0;}
+header h1{font-size:1.6rem;font-weight:700;}
+header p{opacity:.8;font-size:.88rem;margin-top:3px;}
+.header-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+.hbadge{background:rgba(255,255,255,.15);border-radius:20px;padding:3px 12px;font-size:.8rem;}
+.hbadge strong{color:#7ff0c8;}
+
+/* MAIN TABS */
+.main-tabs{display:flex;margin-top:14px;gap:4px;}
+.main-tab{padding:10px 24px;border-radius:8px 8px 0 0;border:none;cursor:pointer;font-size:.95rem;font-weight:700;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);transition:all .15s;}
+.main-tab.active{background:#fff;color:var(--teal-dark);}
+.main-tab:hover:not(.active){background:rgba(255,255,255,.25);color:#fff;}
+
+/* TAB PANELS */
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ═══════════════════════ STANDARDS TAB ═══════════════════════ */
+#std-nav{background:#fff;border-bottom:2px solid var(--gray-200);position:sticky;top:0;z-index:100;overflow-x:auto;white-space:nowrap;}
+#std-nav ul{display:flex;list-style:none;padding:0 16px;}
+#std-nav ul li a{display:block;padding:10px 12px;font-size:.82rem;font-weight:600;color:var(--gray-600);text-decoration:none;border-bottom:3px solid transparent;transition:all .15s;}
+#std-nav ul li a:hover{color:var(--teal);}
+#std-nav ul li a.active{color:var(--teal);border-bottom-color:var(--teal);}
+
+.std-main{max-width:1100px;margin:0 auto;padding:20px 16px 60px;}
+.chapter{margin-bottom:40px;}
+.chapter-header{background:var(--teal);color:#fff;border-radius:var(--radius) var(--radius) 0 0;padding:13px 20px;}
+.chapter-header h2{font-size:1.05rem;font-weight:700;}
+.chapter-intro{background:var(--teal-light);border:1px solid var(--teal);border-top:none;padding:12px 20px;font-size:.87rem;color:var(--teal-dark);}
+.chapter-intro details summary{font-weight:600;cursor:pointer;}
+.chapter-intro details p{margin-top:8px;}
+.standard{border:1px solid var(--gray-200);border-top:none;background:#fff;}
+.standard:last-child{border-radius:0 0 var(--radius) var(--radius);}
+.standard.fundamental{border-left:4px solid var(--teal);}
+.standard-header{display:flex;align-items:center;gap:10px;padding:12px 20px;cursor:pointer;user-select:none;transition:background .12s;}
+.standard-header:hover{background:var(--gray-50);}
+.std-num{font-weight:800;color:var(--teal);font-size:1rem;min-width:38px;}
+.std-title{font-weight:600;flex:1;font-size:.93rem;}
+.f-badge{background:var(--teal);color:#fff;border-radius:12px;padding:2px 9px;font-size:.7rem;font-weight:700;white-space:nowrap;}
+.chevron{color:var(--gray-400);font-size:1rem;transition:transform .2s;margin-left:4px;}
+.standard-header[aria-expanded="true"] .chevron{transform:rotate(180deg);}
+.standard-body{display:none;padding:0 20px 18px;border-top:1px solid var(--gray-200);}
+.standard-body.open{display:block;}
+.standard-text{font-size:.88rem;color:var(--gray-600);margin:12px 0 8px;line-height:1.7;}
+.section-label{font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--teal-dark);margin:14px 0 7px;}
+.eoc-list{list-style:none;padding:0;}
+.eoc-list li{padding:6px 0 6px 18px;border-bottom:1px solid var(--gray-100);font-size:.86rem;position:relative;line-height:1.6;}
+.eoc-list li::before{content:'•';position:absolute;left:3px;color:var(--teal);font-weight:900;}
+.eoc-list li:last-child{border-bottom:none;}
+.sub-list{list-style:none;padding:0;margin:5px 0 0 14px;}
+.sub-list li{padding:3px 0 3px 14px;font-size:.83rem;color:var(--gray-600);position:relative;}
+.sub-list li::before{content:'–';position:absolute;left:0;color:var(--gold);}
+.rubric-box{background:var(--gold-light);border:1px solid #e8c06a;border-radius:var(--radius);padding:12px 14px;margin-top:10px;}
+.rubric-box .section-label{color:#8a6500;margin-top:0;}
+.rubric-list{list-style:none;padding:0;margin:0;}
+.rubric-list li{padding:5px 0 5px 18px;font-size:.84rem;border-bottom:1px solid #f0d98a;position:relative;}
+.rubric-list li:last-child{border-bottom:none;}
+.rubric-list li::before{content:'?';position:absolute;left:1px;color:var(--gold);font-weight:900;font-size:.78rem;}
+.pre-assessment{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:22px;margin-bottom:30px;}
+.pre-assessment h3{color:var(--teal-dark);font-size:1rem;margin-bottom:8px;}
+.pre-assessment p{font-size:.87rem;color:var(--gray-600);margin-bottom:10px;}
+.pa-section{border:1px solid var(--gray-200);border-radius:6px;margin-bottom:8px;overflow:hidden;}
+.pa-section summary{font-weight:600;padding:9px 13px;cursor:pointer;background:var(--gray-50);font-size:.88rem;}
+.pa-section summary:hover{background:var(--teal-light);}
+.pa-section .pa-body{padding:11px 15px;font-size:.85rem;color:var(--gray-600);}
+.overview-box{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;margin-bottom:30px;}
+.overview-box h3{color:var(--teal-dark);margin-bottom:10px;}
+.fund-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;margin-top:10px;}
+.fund-item{background:var(--teal-light);border:1px solid var(--teal);border-radius:6px;padding:5px 11px;font-size:.81rem;font-weight:600;color:var(--teal-dark);}
+.stat-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.stat{background:var(--teal-light);border-radius:var(--radius);padding:9px 16px;text-align:center;}
+.stat .n{font-size:1.5rem;font-weight:800;color:var(--teal);}
+.stat .l{font-size:.73rem;color:var(--teal-dark);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+
+/* ═══════════════════════ EVALUATOR TAB ═══════════════════════ */
+#eval-wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px;}
+.eval-header{background:var(--teal-dark);color:#fff;border-radius:var(--radius);padding:16px 20px;margin-bottom:14px;}
+.eval-header h2{font-size:1.1rem;font-weight:700;}
+.eval-header p{opacity:.8;font-size:.83rem;margin-top:3px;}
+.progress-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.prog-badge{background:rgba(255,255,255,.15);border-radius:6px;padding:4px 12px;font-size:.82rem;}
+.progress-bar-wrap{margin-top:8px;background:rgba(255,255,255,.2);border-radius:4px;height:8px;}
+.progress-bar-fill{background:#4ade80;border-radius:4px;height:8px;transition:width .3s;}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.leg{border-radius:20px;padding:3px 10px;font-size:.78rem;font-weight:700;}
+.eval-filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.eval-filters select{padding:6px 10px;border-radius:6px;border:1px solid var(--gray-200);font-size:.82rem;}
+.view-btns{display:flex;gap:4px;margin-left:auto;}
+.view-btn{padding:5px 12px;border-radius:5px;border:none;cursor:pointer;font-weight:600;font-size:.82rem;background:var(--gray-200);color:var(--gray-600);}
+.view-btn.active{background:var(--teal-dark);color:#fff;}
+.eval-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px;}
+.eval-card{border-radius:var(--radius);padding:11px;cursor:pointer;border:1px solid var(--gray-200);transition:box-shadow .15s;}
+.eval-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.13);}
+.eval-card .card-num{font-weight:800;color:var(--teal);font-size:.95rem;}
+.eval-card .card-title{font-weight:600;font-size:.82rem;margin-top:3px;line-height:1.4;}
+.eval-card .card-meta{display:flex;gap:5px;margin-top:7px;align-items:center;flex-wrap:wrap;}
+.eval-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.eval-table th{padding:8px 10px;text-align:left;border-bottom:2px solid var(--gray-200);font-weight:700;background:var(--gray-100);white-space:nowrap;}
+.eval-table td{padding:7px 10px;border-bottom:1px solid var(--gray-200);}
+.eval-table tr{cursor:pointer;}
+.eval-table tr:hover td{background:var(--teal-light);}
+.ctag{border-radius:10px;padding:2px 8px;font-size:.7rem;font-weight:700;white-space:nowrap;}
+.stag{border-radius:10px;padding:2px 8px;font-size:.72rem;font-weight:600;white-space:nowrap;}
+/* Detail panel */
+.detail-panel{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;}
+.detail-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.detail-top h2{font-size:1.1rem;color:var(--gray-800);margin:5px 0 3px;}
+.detail-meta{font-size:.82rem;color:var(--gray-600);}
+.back-btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--gray-100);font-weight:600;font-size:.82rem;white-space:nowrap;}
+.rubric-q{border-radius:var(--radius);padding:11px 13px;margin-bottom:9px;border:1px solid var(--gray-200);}
+.rubric-q .q-text{font-weight:600;font-size:.86rem;margin-bottom:7px;line-height:1.5;}
+.q-num{color:var(--gray-400);margin-right:5px;}
+.status-btns{display:flex;gap:5px;flex-wrap:wrap;}
+.status-btn{padding:3px 11px;border-radius:20px;border:2px solid var(--gray-200);cursor:pointer;font-size:.78rem;font-weight:500;background:#fff;color:var(--gray-600);transition:all .12s;}
+.notes-area{width:100%;min-height:75px;padding:8px 10px;border-radius:6px;border:1px solid var(--gray-200);font-size:.85rem;resize:vertical;margin-top:6px;font-family:inherit;}
+.detail-nav{display:flex;justify-content:space-between;margin-top:14px;}
+.dnav-btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--gray-100);color:var(--gray-700);font-weight:600;font-size:.82rem;}
+.dnav-btn:disabled{opacity:.35;cursor:default;}
+.hidden{display:none!important;}
+@media(max-width:600px){
+  header h1{font-size:1.2rem;}
+  .main-tab{padding:8px 14px;font-size:.82rem;}
+  #std-nav ul li a{padding:9px 8px;font-size:.75rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CAPRA 2027 National Accreditation Standards</h1>
+  <p>Commission for Accreditation of Park and Recreation Agencies &nbsp;|&nbsp; Revised August 2025</p>
+  <div class="header-meta">
+    <div class="hbadge">Standards: <strong>67</strong></div>
+    <div class="hbadge">Fundamental: <strong>37</strong></div>
+    <div class="hbadge">Non-Fundamental: <strong>30</strong></div>
+    <div class="hbadge">Chapters: <strong>10</strong></div>
+  </div>
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="switchTab('standards',this)">📋 Standards Reference</button>
+    <button class="main-tab" onclick="switchTab('evaluator',this)">✅ Compliance Evaluator</button>
+  </div>
+</header>
+
+<!-- ═══════════════════ STANDARDS TAB ═══════════════════ -->
+<div id="tab-standards" class="tab-panel active">
+
+<nav id="std-nav">
+  <ul>
+    <li><a href="#s-overview" data-sec="s-overview">Overview</a></li>
+    <li><a href="#s-preassess" data-sec="s-preassess">Pre-Assessment</a></li>
+    <li><a href="#s-ch1" data-sec="s-ch1">1·Mission</a></li>
+    <li><a href="#s-ch2" data-sec="s-ch2">2·Admin</a></li>
+    <li><a href="#s-ch3" data-sec="s-ch3">3·Planning</a></li>
+    <li><a href="#s-ch4" data-sec="s-ch4">4·HR</a></li>
+    <li><a href="#s-ch5" data-sec="s-ch5">5·Finance</a></li>
+    <li><a href="#s-ch6" data-sec="s-ch6">6·Programs</a></li>
+    <li><a href="#s-ch7" data-sec="s-ch7">7·Facilities</a></li>
+    <li><a href="#s-ch8" data-sec="s-ch8">8·Risk</a></li>
+    <li><a href="#s-ch9" data-sec="s-ch9">9·Marketing</a></li>
+    <li><a href="#s-ch10" data-sec="s-ch10">10·Evaluation</a></li>
+  </ul>
+</nav>
+
+<div class="std-main">
+
+<section id="s-overview">
+<div class="overview-box">
+  <h3>Accreditation Process Overview</h3>
+  <div class="stat-row">
+    <div class="stat"><div class="n">67</div><div class="l">Total Standards</div></div>
+    <div class="stat"><div class="n">37</div><div class="l">Fundamental</div></div>
+    <div class="stat"><div class="n">30</div><div class="l">Non-Fundamental</div></div>
+    <div class="stat"><div class="n">5 yrs</div><div class="l">Cycle</div></div>
+  </div>
+  <p style="font-size:.88rem;color:var(--gray-600);margin-bottom:12px;">To achieve accreditation, an agency must comply with <strong>all 37 Fundamental Standards</strong> and <strong>24 of 30 Non-Fundamental Standards</strong> upon initial accreditation, and <strong>27 of 30</strong> upon reaccreditation.</p>
+  <div class="section-label" style="margin-top:0">All 37 Fundamental Standards</div>
+  <div class="fund-grid">
+    <div class="fund-item">★ 1.1 Mission, Vision, and Values</div><div class="fund-item">★ 1.2 Strategic Plan</div><div class="fund-item">★ 1.3 Community Involvement in Strategic Planning</div><div class="fund-item">★ 1.4 Personnel Involvement in Strategic Planning</div><div class="fund-item">★ 2.1 Advisory Boards and Commissions</div><div class="fund-item">★ 2.5 ADA Services &amp; Adaptive Programs</div><div class="fund-item">★ 3.1 Community and Park Planning Strategy</div><div class="fund-item">★ 3.3 Parks and Recreation System Master Plan</div><div class="fund-item">★ 4.1 HR Planning, Workforce Dev., and Culture</div><div class="fund-item">★ 4.2 Personnel Policies and Procedures Manual</div><div class="fund-item">★ 5.1 Financial Management, Responsibility &amp; Accountability</div><div class="fund-item">★ 5.2 Legal Authority and Fiscal Policy</div><div class="fund-item">★ 5.3 Comprehensive Revenue Policy</div><div class="fund-item">★ 5.5 Financial Statements</div><div class="fund-item">★ 5.6 Purchasing Policy</div><div class="fund-item">★ 5.7 Independent Audit</div><div class="fund-item">★ 5.8 Annual or Biennial Budget</div><div class="fund-item">★ 5.10 Capital Asset Management</div><div class="fund-item">★ 6.1 Recreation Program Responsibility &amp; Accountability</div><div class="fund-item">★ 6.2 Program and Service Determinants</div><div class="fund-item">★ 6.3 Recreation Program Plan (RPP)</div><div class="fund-item">★ 6.4 Program Evaluation – Staff Training</div><div class="fund-item">★ 7.1 Facility and Land Use Responsibility</div><div class="fund-item">★ 7.2 Land Acquisition and Disposal</div><div class="fund-item">★ 7.3 Property Development</div><div class="fund-item">★ 7.4 Maintenance and Operations Management</div><div class="fund-item">★ 8.1 Risk Management Responsibility and Strategy</div><div class="fund-item">★ 8.2 Codes, Laws, Ordinances, Policies, and/or Rules</div><div class="fund-item">★ 8.3 General Security Plan</div><div class="fund-item">★ 8.4 Personnel Safety Training</div><div class="fund-item">★ 8.7 Accidents/Incidents</div><div class="fund-item">★ 8.8 Emergency Management Plan</div><div class="fund-item">★ 9.2 External Marketing and Communications</div><div class="fund-item">★ 9.5 Community Engagement</div><div class="fund-item">★ 9.6 Crisis Communications</div><div class="fund-item">★ 10.2 Systematic Data Collection</div><div class="fund-item">★ 10.3 Systematic Data Analysis and Action</div>
+  </div>
+</div>
+</section>
+
+<section id="s-preassess">
+<div class="pre-assessment">
+  <h3>Agency Pre-Assessment Report</h3>
+  <p>Required prior to the self-assessment and visit processes. All elements must be deemed complete by the CRT Advisor before moving forward.</p>
+  <details class="pa-section"><summary>Section 1 – General Historical Information</summary><div class="pa-body"><ul class="eoc-list"><li>Provide a narrative describing a general overview of the founding of the agency and key points in its history and governance.</li><li>Include impactful events that shaped the agency's development, services, community, etc.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 2 – Source of Authority</summary><div class="pa-body"><ul class="eoc-list"><li>Provide legal citation and, if appropriate, date of resolution by local governing entity or legal authority.</li><li>Provide a narrative describing how the source of authority defines how the agency operates.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 3 – Approving Authority/Governing Body</summary><div class="pa-body"><ul class="eoc-list"><li>Provide a chart or diagram and narrative description of the organizational structure, interrelationship of organizational components and powers of authority over policymaking.</li><li>Provide examples that illustrate how agency staff work in compliance with the established approving authority structure.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 4 – Delegation of Authority</summary><div class="pa-body"><ul class="eoc-list"><li>Provide documentation of the delegation of responsibilities among approving authority, advisory body, agency administrator/director, and staff regarding development and implementation of policies, rules, regulations, and operational procedures.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 5 – Agency Leadership</summary><div class="pa-body"><ul class="eoc-list"><li>Provide the position description for the Agency Administrator/Director, including resume with proof of required certifications and qualifications.</li><li>Provide a descriptive narrative linking the qualifications of the position to the needs of the agency.</li><li>If from a related or non-related discipline, provide a summary of how the person's qualifications relate to park and/or recreation management and NRPA's three pillars.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 6 – Jurisdiction</summary><div class="pa-body"><ul class="eoc-list"><li>Provide a map with geographical boundaries of jurisdiction and service areas, including location of facilities identified.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 7 – Organization Structure</summary><div class="pa-body"><ul class="eoc-list"><li>Provide an up-to-date organizational chart with a narrative description explaining how the structure is suited to the agency's mission, vision, strategic plan, methods of operation and relationship to the community.</li><li>Identify and explain how adjustments to the structure were made in the past five years.</li><li>Indicate how this information is made available to staff and the public.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 8 – Agency Awards and Citations</summary><div class="pa-body"><ul class="eoc-list"><li>Provide a list of both agency and agency staff awards at the local, state, and national level received in the last ten years as well as any important accomplishments or successes.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 9 – Agency Changes Since Last Accreditation (Reaccrediting only)</summary><div class="pa-body"><ul class="eoc-list"><li>Provide a narrative that describes changes in leadership, new major facilities, added or dropped programs/services, staffing levels, wildfires, floods, pandemics, etc.</li></ul></div></details>
+  <details class="pa-section"><summary>Section 10 – Periodic Timetable for Review of Documents</summary><div class="pa-body"><p><strong>Fundamental requiring periodic review:</strong> 1.2, 2.5, 3.3, 4.2, 5.3, 5.6, 6.3, 7.2, 7.3, 8.3, 8.8, 10.3</p><p><strong>Non-Fundamental requiring periodic review:</strong> 2.6, 4.3, 4.8, 4.9, 7.5, 7.6, 7.7, 9.4</p><ul class="eoc-list"><li>Provide the agency review schedule including the Authority responsible for approving each document.</li></ul></div></details>
+</div>
+</section>
+
+<!-- CHAPTERS - using a helper to keep this manageable -->
+<div id="std-chapters"></div>
+
+</div><!-- end std-main -->
+</div><!-- end tab-standards -->
+
+<!-- ═══════════════════ EVALUATOR TAB ═══════════════════ -->
+<div id="tab-evaluator" class="tab-panel">
+<div id="eval-wrap">
+  <div class="eval-header">
+    <h2>Compliance Evaluator &amp; 154→67 Crosswalk</h2>
+    <p>Rate rubric questions · track gaps · see how old standards map to new ones</p>
+    <div class="progress-row">
+      <div class="prog-badge">Complete: <strong id="e-complete">0</strong></div>
+      <div class="prog-badge">Partial: <strong id="e-partial">0</strong></div>
+      <div class="prog-badge">Gap: <strong id="e-gap">0</strong></div>
+      <div class="prog-badge">Not Started: <strong id="e-ns">0</strong></div>
+      <div class="prog-badge"><strong id="e-pct">0</strong>% Complete</div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="e-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="legend">
+    <span class="leg" style="background:#dbeafe;color:#1e40af">1:1 Carry-over</span>
+    <span class="leg" style="background:#ede9fe;color:#5b21b6">Elevated</span>
+    <span class="leg" style="background:#fef3c7;color:#92400e">Merged</span>
+    <span class="leg" style="background:#f3f4f6;color:#374151">Expanded/Moved</span>
+    <span class="leg" style="background:#dcfce7;color:#166534">New Standard</span>
+  </div>
+
+  <div class="eval-filters">
+    <select id="e-filter-ch"><option value="">All Chapters</option><option value="1">Ch.1 Mission</option><option value="2">Ch.2 Admin</option><option value="3">Ch.3 Planning</option><option value="4">Ch.4 HR</option><option value="5">Ch.5 Finance</option><option value="6">Ch.6 Programs</option><option value="7">Ch.7 Facilities</option><option value="8">Ch.8 Risk &amp; Safety</option><option value="9">Ch.9 Marketing</option><option value="10">Ch.10 Evaluation</option></select>
+    <select id="e-filter-status"><option value="">All Statuses</option><option value="">Not Started</option><option value="gap">Gap</option><option value="partial">Partial</option><option value="complete">Complete</option></select>
+    <select id="e-filter-fund"><option value="all">All Standards</option><option value="fund">Fundamental Only</option><option value="nonfund">Non-Fundamental Only</option></select>
+    <div class="view-btns">
+      <button class="view-btn active" id="btn-grid" onclick="setView('grid')">⊞ Grid</button>
+      <button class="view-btn" id="btn-list" onclick="setView('list')">≡ List</button>
+    </div>
+  </div>
+
+  <div id="eval-list-area"></div>
+  <div id="eval-detail-area" class="hidden"></div>
+</div>
+</div>
+
+<footer style="text-align:center;padding:18px;font-size:.78rem;color:var(--gray-400);border-top:1px solid var(--gray-200);">
+  2027 CAPRA National Accreditation Standards &nbsp;|&nbsp; Revised August 2025 &nbsp;|&nbsp; NRPA/CAPRA
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════ */
+var STDS = [
+  {ch:1,num:"1.1",title:"Mission, Vision, and Values",fund:true,change:"MERGED",old:"1.4, 1.5",oldT:"Mission; Vision",note:"Combined mission and vision; adds Values component",
+   text:"Agencies shall have an approved mission statement prescribing the purpose of the organization, a vision that casts direction for the long-term future of the organization, and values that set a tone for the agency's culture.",
+   eoc:["Provide the approved mission, vision, and values statements and provide evidence of regular review which may be via retreat, strategic planning, approving authority review, or the like.","Provide a narrative describing how the mission, vision, and values were derived from the purpose and/or source of authority of the agency or from recent community input and engagement.","Provide in the narrative how the mission, vision, and values are embedded in the culture of the organization, strategic plans, and master plans (PMP and RPP), and that the mission, vision, and values are communicated to the public."],
+   rubric:["Did the agency provide mission, vision, and values statements properly approved by the appropriate approving authority?","Does the narrative describe how these statements aligned with the Agency's purpose or authority?","Was the mission, vision, and values communicated with staff?","Are these statements posted on agency website in view of public?","Is the mission, vision, and values embedded in the culture and work of the agency?"]},
+  {ch:1,num:"1.2",title:"Strategic Plan",fund:true,change:"1:1",old:"2.5",oldT:"Strategic Plan",note:"Direct carry-over; now in Ch. 1",
+   text:"The agency shall have an approved strategic plan derived from the mission and vision that establishes goals and objectives to direct its actions and decision-making. The document shall guide the efforts of the agency for two (2) to five (5) years.",
+   eoc:["Provide the strategic plan approved by the appropriate authority within the last five years.","Provide a narrative that demonstrates alignment among mission, vision, values, and other pertinent agency planning documents such as the overarching organization's strategic objectives.","Provide evidence of annual review with progress updates on agency goals and objectives established by the plan."],
+   rubric:["Did the agency provide an approved strategic plan within the last five years?","Did the narrative demonstrate how the agency's mission, vision, and values align with the overarching organization's strategic goals and planning documents?","Has the agency provided evidence of an annual review?"]},
+  {ch:1,num:"1.3",title:"Community Involvement in Agency Strategic Planning",fund:true,change:"EXPANDED",old:"2.9",oldT:"Community Involvement",note:"Narrowed focus to strategic planning context; outreach to under-resourced communities added",
+   text:"Agencies shall solicit and consider the needs of the service area's demographics with its adoption of strategic actions. Community involvement shall be the focus of a Master Plan and inform the creation of a Strategic Plan. The Strategic Plan should include an outreach focus on under-resourced communities and previously left out populations.",
+   eoc:["Provide specific examples of how community outreach and input from the Master Plan and/or Needs Assessment have informed the agency's strategic planning goals and objectives.","Describe how the Strategic Plan will help the agency support community needs and broader goals outlined in the Master Plan."],
+   rubric:["Was the Agency's strategic plan developed following outreach to and engagement with a wide variety of community members that are representative of the entire community's demographics?","Did the agency share examples of community outreach or engagement they conducted (like surveys, focus groups or public meetings)?","Does the narrative describe how the strategic plan will support community needs?","Does the agency describe how the strategic plan connects to the master plan?"]},
+  {ch:1,num:"1.4",title:"Personnel Involvement in Agency Strategic Planning",fund:true,change:"ELEVATED",old:"1.4.2",oldT:"Personnel Involvement",note:"Elevated from sub-standard; focused on strategic planning",
+   text:"Agencies shall have outreach and include input on strategic planning efforts from staff at multiple levels of employment and all divisions within the organization structure.",
+   eoc:["Provide a narrative description of the process used to collect staff input on Strategic Plan development from various levels within the organization.","Provide evidence of staff input being used to inform strategic planning objectives."],
+   rubric:["Did the agency's strategic plan include outreach/input with the staff?","Did the staff outreach represent multiple levels and accessible within the organization?","Was the input received used to inform strategic planning goals and objectives?"]},
+  {ch:2,num:"2.1",title:"Advisory Boards and Commissions",fund:true,change:"ELEVATED",old:"1.1.2",oldT:"Citizen Advisory Boards/Committees",note:"Elevated from sub-standard 1.1.2",
+   text:"The agency shall have at least one board, commission, and/or committee comprised of members of the public that influence, direct, and that may approve policy, strategy, and financial decisions of the agency.",
+   eoc:["Provide a list of public boards, commissions, and/or committees.","Provide evidence of input collected from each group that has influenced or directed policymaking, service delivery adjustments, or other changes to the organization."],
+   rubric:["Has the agency provided a list of public boards, commissions, and/or committees?","Has the agency demonstrated how input from boards, commissions, and/or committees has been used to inform decision-making related to policy-setting, service delivery adjustments, or other operational changes to the organization?"]},
+  {ch:2,num:"2.2",title:"Agency Relationships",fund:false,change:"MERGED",old:"1.7, 1.7.1",oldT:"Agency Relationships; Operational Coordination Agreements",note:"Merged two related standards into one",
+   text:"There shall be collaborative and cooperative relationships that assist in fulfillment of the agency's mission and its measurable performance objectives.",
+   eoc:["Provide a matrix outlining a list of 3 Intergovernmental Agreement (IGA), Memoranda of Understanding (MOU) or ongoing cooperative projects or efforts with accompanying staff assigned, including how this program fulfills the mission, identifies the staff and their relationship with the partner agency, start date and expiration date of agreement, performance measures, and link to the agreement(s)."],
+   rubric:["Has the agency provided a matrix of 3 ongoing cooperative projects (based on the Evidence of Compliance) with specific staff assigned as liaisons that are providing assistance in fulfillment of the agency's mission and its measurable performance objectives?"]},
+  {ch:2,num:"2.3",title:"Technological Resources",fund:false,change:"MERGED",old:"3.5, 3.5.1",oldT:"Utilization of Technology; Management Information Systems",note:"Merged technology standards; MIS folded in",
+   text:"Agencies shall engage in progressive research, adoption, upgrade, installation, and/or usage of technology in furtherance of the agency's mission and planning strategies.",
+   eoc:["Provide a matrix illustrating the technology used by the agency, including dates of adoption/installation or latest upgrade, description of how each resource is used to further the mission and goals, and link or screenshot of technology example.","Examples should include but are not limited to data management and sharing systems, work order and assignment applications, park maintenance activities, and activity registration systems."],
+   rubric:["Did the agency provide a matrix (based on the Evidence of Compliance) with all of the required information?","Has the agency demonstrated how the technology available to the agency is used in furtherance of its mission?"]},
+  {ch:2,num:"2.4",title:"Records Management",fund:false,change:"MERGED",old:"3.6, 3.6.1",oldT:"Records Management Policy; Records Disaster Mitigation",note:"Merged two records standards into one",
+   text:"There shall be a designated position responsible for records management. There shall be a policy in place that ensures public records are retained in compliance with open records laws intended to promote transparency.",
+   eoc:["Provide the position description that reflects responsibility for records management for the organization and agency liaison if different.","Provide the policy and procedures.","Demonstrate how a member of the community can access public records.","Provide a narrative describing how the agency has planned to recover records in the event of a disaster or other threat to agency records."],
+   rubric:["Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Records Management activities showing they are qualified to perform these duties?","Did the agency provide policy and procedures?","Did the agency provide the public records request process?","Was a process or strategy for protecting records from loss provided?","Did the agency describe how they plan to recover records in the event of a disaster?"]},
+  {ch:2,num:"2.5",title:"Adaptive Programs / ADA Services Accessibility Compliance",fund:true,change:"EXPANDED",old:"2.10",oldT:"ADA Transition Plan",note:"Significantly expanded; now includes adaptive programming, website accessibility, complaint process",
+   text:"There shall be a policy or procedure available to all members of the public and staff which addresses issues pertaining to ADA compliance, access, and inclusive/adaptive programming. Agencies shall be compliant with the Americans with Disabilities Act (ADA).",
+   eoc:["Provide policy and procedures which address issues pertaining to ADA compliance, access, and adaptive programming.","Provide the position description that reflects responsibility for ADA compliance functions.","Demonstrate that the agency's website is accessible.","Provide the Transition Plan, including evidence of an access audit and regular review and reporting on progress in remedying barriers to access identified in the Audit.","Provide evidence that the agency provides adaptive programs or is cooperating with an agency or agencies who do provide such programming.","Provide evidence of a publicly posted notice that communicates the dispute process in compliance with the ADA.","Demonstrate how the policies and procedures are used to receive and respond to a complaint."],
+   rubric:["Did the agency provide the ADA policies and procedures?","Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for ADA activities showing they are qualified to perform these duties?","Is the agency's website accessible?","Did the agency provide an ADA Transition Plan?","Has the agency demonstrated that the Transition Plan is regularly reviewed, and progress made to reduce barriers to access is documented?","Is there evidence that the agency is providing adaptive programs or is cooperating with other entity(ies) to provide such programming?","Did the agency provide evidence that ADA notices are posted and available to the public outlining the complaint process?","If a complaint has been received, has the agency demonstrated that it followed policies and procedures to find resolution?"]},
+  {ch:2,num:"2.6",title:"Continuity of Operations",fund:false,change:"NEW",old:"(NEW)",oldT:"—",note:"New standard with no direct predecessor in 154-standard set",
+   text:"Agencies shall provide a procedure for the continuity of operations (COOP). The COOP is a plan designed to continue essential functions of an agency.",
+   eoc:["Provide a COOP plan that outlines the key roles for short term vacancies and provides guidance for emergency situations and outlines the elements of 'Viable Continuity Capability' as outlined by FEMA.","The COOP should provide date of acceptance and latest review date."],
+   rubric:["Did the agency provide a COOP with all key elements included (based on the Evidence of Compliance)?","Did the agency provide the date of acceptance of the COOP and date of last review?"]},
+  {ch:3,num:"3.1",title:"Community and Park Planning Strategy",fund:true,change:"EXPANDED",old:"2.1",oldT:"Overall Planning Function within Agency",note:"Expanded to emphasize strategy and mission alignment",
+   text:"There shall be a designated position (individual) or team responsible for the agency's community and park planning efforts. This individual/team shall influence local planning and community development efforts that further the Mission, Vision and Strategic Plan of the agency.",
+   eoc:["Provide a narrative description of the overall community and park planning strategy utilized by the agency.","Provide the job description and relevant education/experience for the position(s) involved in planning efforts on behalf of the agency.","Provide evidence of involvement in local planning and community development with specific emphasis on influence in planning/development resulting in actions that support the Mission, Vision and Strategic Plan of the agency."],
+   rubric:["Did the agency describe their overall community and park planning strategy?","Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Community and Park Planning activities showing they are qualified to perform these duties?","Has the agency demonstrated that local planning and community development support the mission, vision and strategic plan of the agency?"]},
+  {ch:3,num:"3.2",title:"Planning with Regional, State and Federal Agencies",fund:false,change:"1:1",old:"2.3",oldT:"Planning with Regional, State, and Federal Agencies",note:"Direct carry-over",
+   text:"The agency shall be involved with external agencies having jurisdictional authority over land use matters in regional, state, or federal planning efforts to represent the community's park and recreation interests.",
+   eoc:["Demonstrate the role of the agency in regional, state or federal planning through personnel assignments and documentation of involvement with external agencies having overlapping or adjacent jurisdictional authority over land use matters.","Provide evidence of cooperative efforts that further the Mission, Vision and Strategic Plan."],
+   rubric:["Has the agency demonstrated that assigned community and park planning staff have a role in community and park planning activities that are conducted in cooperation with regional, state, and/or federal agencies?","Does this cooperation/involvement result in actions that support the mission, vision, and strategic plan objectives?"]},
+  {ch:3,num:"3.3",title:"Parks and Recreation System Master Plan",fund:true,change:"1:1",old:"2.4",oldT:"Park and Recreation System Master Plan",note:"Streamlined; references to sub-standards removed",
+   text:"The agency shall adopt and periodically review a Parks and Recreation System Master Plan in alignment with its Mission, Vision and Strategic Plan that creates a basis for strategic investment in assets, property, facilities, and improvements.",
+   eoc:["Provide the plan which shall include an analysis of current conditions through community needs assessment, list of agency-managed parks and facilities, level of service analysis, and current trends. Evidence of review periodically (within last 5 years) is required.","The narrative shall describe how plan findings and recommendations are tied to Mission, Vision and Strategic Plan objectives to formulate a progression strategy from existing conditions to desired conditions.","The agency shall describe input/feedback efforts used that reach and/or include members of the community, users and non-users.","Evidence of initial or updated adoption."],
+   rubric:["Did the agency provide a Parks and Recreation System Master Plan that was reviewed periodically (within last 5 years) that includes all required elements listed in the Evidence of Compliance?","Has the agency demonstrated that the Master Plan is a designed set of progressive steps showing the strategy from existing conditions to desired conditions?","Are the Master Plan's findings and recommendations in alignment with the mission, vision and strategic plan?","Did the agency receive feedback from both users and non-users to achieve a community-wide plan?","Has the agency demonstrated that community input collected was used to inform planning objectives?","Did the agency demonstrate evidence of initial or updated adoption?"]},
+  {ch:3,num:"3.4",title:"Feasibility Studies",fund:false,change:"1:1",old:"2.6",oldT:"Feasibility Studies",note:"Direct carry-over",
+   text:"The agency shall investigate current conditions and project impacts prior to initiating planned park or recreation projects.",
+   eoc:["Provide examples of feasibility studies such as market, cost-benefit, site, transportation, environmental, comprehensive demographic and economic analyses.","Provide a narrative describing how a recent study was used to inform the decisions made related to a planned project."],
+   rubric:["Did the agency provide at least one example of a feasibility study used to inform decisions made related to a planned project?","Did the agency describe how a recent study was used to inform decisions?"]},
+  {ch:3,num:"3.5",title:"Site Plans",fund:false,change:"EXPANDED",old:"2.7",oldT:"Site Plans",note:"Now requires community input narrative and alignment with Master Plan",
+   text:"Site plans shall be created with input from residents living within the service area of the agency's property and in alignment with Park Master Plan objectives.",
+   eoc:["Provide a representative sampling of 2 or more of the agency's area and facility site plans, which may be new park site plans or park/facility renovations.","Provide a narrative describing how a recent site plan was developed using input from residents living within the service area.","Demonstrate that a site plan is in alignment with Park Master Plan objectives and community input."],
+   rubric:["Did the agency provide a representative sampling of 2 or more facility site plans guiding the development of parks in the agency's park system?","Did the agency describe how a recent site plan was developed using community input from residents living within the service area?","Has the agency demonstrated that the site plan is in alignment with Park Master Plan objectives and community input?"]},
+  {ch:3,num:"3.6",title:"Sustainability and Environmental Resilience Strategy",fund:false,change:"NEW",old:"(NEW)",oldT:"—",note:"New broad standard; replaces narrow recycling sub-standard with comprehensive sustainability strategy",
+   text:"Environmental resilience must be a conscious effort, planned and implemented with intention. Agencies shall set and implement goals, policies, procedures, and practices that promote sustainable practices and environmental resilience.",
+   eoc:["Provide a narrative outlining the agency's sustainability and environmental resilience strategy and goals.","Demonstrate how these are shared with the public.","How the strategy addresses resilience equitably, particularly for communities most impacted by such concerns?","Demonstrate how these were evaluated."],
+   rubric:["Has the agency demonstrated that it has established strategies and/or practices related to sustainability and environmental resilience goals?","Did the agency demonstrate how these have been shared with the public?","Did the agency demonstrate how these address resilience equitably?","Did the agency demonstrate how these were evaluated?"]},
+  {ch:4,num:"4.1",title:"Human Resource Planning, Workforce Development, and Culture",fund:true,change:"NEW",old:"(NEW umbrella)",oldT:"—",note:"New umbrella standard; no direct predecessor",
+   text:"There shall be a designated position (individual) or team responsible for the agency's Human Resource functions. The agency shall engage their employees to evaluate their perceptions and perspectives of the quality of the agency's human resources, workforce composition, professional development and/or organizational culture.",
+   eoc:["Provide a narrative description of the overall human resource planning strategy utilized by the agency.","Provide the job description and relevant education/experience for the position(s) involved in human resource efforts on behalf of the agency.","Provide evidence of data collection, analysis, and decision making related to human resource planning, workforce composition, professional development, and organizational culture that consistently improve service delivery as well as enhance employee work environment and job satisfaction."],
+   rubric:["Did the agency explain their human resource planning strategy?","Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Human Resources activities showing they are qualified to perform these duties?","Did the agency provide evidence of collected and analyzed data that has informed decisions made related to human resources planning, workforce composition, professional development, and/or organizational culture?"]},
+  {ch:4,num:"4.2",title:"Personnel Policies and Procedures Manual",fund:true,change:"MERGED",old:"4.1, 4.1.1, 4.1.1.1, 4.1.3",oldT:"Personnel Policies Manual; Code of Ethics; Gifts & Gratuities; Equal Opportunity/Diversity",note:"Consolidated 4 standards into one",
+   text:"The agency shall have created and made internally available to staff a Personnel Policies and Procedures Manual that contains both legally required and agency-specific employment information.",
+   eoc:["Provide Personnel Policies and Procedures Manual including: date of adoption by the agency's approving authority, date of last review, code of ethics, standards related to the acceptance of gifts and gratuities by staff, benefits, equitable and diverse recruitment, selection and hiring with background investigation (unless prohibited by law), evaluation, dismissal, separation, grievances, and equal-opportunity employment practices.","If appropriate, provide a narrative expressing changes made to the Manual since the last accreditation review."],
+   rubric:["Did the agency provide a Personnel Policies and Procedures Manual that includes all the required elements listed in the Evidence of Compliance?","If the agency has made changes to the manual since the last accreditation review, has the agency provided a narrative describing those changes?"]},
+  {ch:4,num:"4.3",title:"Compensation Plan",fund:false,change:"ELEVATED",old:"4.1.8",oldT:"Compensation Plan",note:"Elevated from sub-standard",
+   text:"There shall be an established compensation plan that ensures fair compensation among units within the agency that is reviewed periodically.",
+   eoc:["Provide the compensation plan and a copy of its most recent review or update."],
+   rubric:["Did the agency provide evidence that a compensation plan has been established that provides fair compensation among units within the agency?","Has the plan been periodically reviewed?"]},
+  {ch:4,num:"4.4",title:"Employee Performance Evaluation and Supervision",fund:false,change:"1:1",old:"4.4",oldT:"Employee Performance Evaluation",note:"Direct carry-over with modernized language",
+   text:"Agencies shall implement a comprehensive system of employee supervision and performance evaluation that is designed to achieve agency goals and objectives.",
+   eoc:["Provide the policy and procedures outlining the systematic performance evaluation system.","Detail how this system connects agency mission, vision, values, and strategic objectives into the performance evaluation system.","Provide evidence of implementation and communication to and with employees on performance review and improvement.","If unionized, provide the agreed-upon performance evaluation system that applies to covered employees."],
+   rubric:["Did the agency provide policy and procedures outlining the systematic performance evaluation system?","Has the agency demonstrated that the evaluation system is aligned with the agency's mission, vision, values, and strategic plan?","Did the agency provide evidence of implementation and communication with employees?","If unionized, has the agency provided information related to the agreed upon performance evaluation system that applies to covered employees?"]},
+  {ch:4,num:"4.5",title:"Onboarding Processes (Orientation and Training)",fund:false,change:"EXPANDED",old:"4.5",oldT:"Employee Orientation",note:"Expanded to full onboarding experience beyond initial orientation",
+   text:"The agency shall provide employee onboarding/orientation processes and activities for new employees that include an introduction to the agency's Mission, Vision, Values, culture, and key performance objectives.",
+   eoc:["Provide outline of the onboarding/orientation program and a representative example of materials distributed.","Provide a description of the onboarding process that extends beyond the initial orientation.","Provide a narrative detailing an evaluation of the onboarding activities with examples of recent evaluation of trainings completed by the agency, including curriculum content, training dates and participant lists."],
+   rubric:["Did the agency provide an outline of the onboarding/orientation program is in place and utilized?","Did the agency provide representative example of materials distributed?","Does the implemented onboarding program extend beyond the initial orientation?","Has the agency demonstrated that it evaluates its onboarding program?"]},
+  {ch:4,num:"4.6",title:"Employee Development and Training Program",fund:false,change:"ELEVATED",old:"4.6.1",oldT:"Employee Training and Development Program",note:"Elevated from sub-standard; adds succession planning emphasis",
+   text:"Opportunities shall be provided to employees at all levels within the agency that continue to improve and enhance individual performance, leadership-succession planning and agency service delivery.",
+   eoc:["Describe the goals of the Employee Development and Training Program.","Provide the scope and components of the Program, an outline of training offered (mandatory and discretionary), and a sampling of lists of participants for the previous five years. If seeking initial accreditation, a minimum of one year of evidence is required.","Provide evidence of training for all employees including upper-level supervisors, support for ongoing education and achievement of workforce development, leadership-succession planning and certification objectives."],
+   rubric:["Did the agency describe the goals of the employee development and training program?","Did the agency provide the scope and components of the program, including both mandatory and optional training?","Are training opportunities and a sampling of participant lists provided as evidence of ongoing implementation? (Initial: 1 year; Reaccreditation: 5 years)","Has the agency demonstrated that its program offers development opportunities for employees in multiple levels of the organization's structure?","Has the agency demonstrated that the program supports leadership succession and certification objectives?"]},
+  {ch:4,num:"4.7",title:"Professional Certification and Organization Membership",fund:false,change:"ELEVATED",old:"4.6.2",oldT:"Professional Certification",note:"Elevated from sub-standard; expanded to include org membership",
+   text:"Agencies shall encourage and, where possible, provide 'time off' or financial assistance, to enhance and develop employee acumen, ensure employees invest in a culture of lifelong learning.",
+   eoc:["Provide a comprehensive list of staff with professional certifications and those who have actively participated in a professional organization during the prior accreditation review period.","Provide a narrative describing how opportunities are afforded to a wide array of staff from various levels within the organization."],
+   rubric:["Did the agency provide a comprehensive list of staff that includes their professional credentials and participation in professional development and association activities?","Did the agency describe how opportunities are provided to a variety of levels of staff for professional certification and participation in organization memberships?"]},
+  {ch:4,num:"4.8",title:"Workforce Health and Wellness Program",fund:false,change:"1:1",old:"4.7",oldT:"Workforce Health and Wellness Program",note:"Direct carry-over; evaluation requirement retained",
+   text:"Agencies shall provide an employee health and wellness program. The program shall be periodically evaluated to ensure the program meets agency goals and objectives for the program.",
+   eoc:["Provide evidence of the agency's employee health and wellness program, level of participation, and most recent evaluation.","Provide a narrative describing the goals of the program and any decisions made informed by results of the periodic evaluation."],
+   rubric:["Did the agency provide evidence of a workforce health and wellness program?","Has the program been evaluated?","Did the agency describe how the program has goals and objectives?","Did the agency describe how results of the evaluation informed changes (or no changes) to the program?"]},
+  {ch:4,num:"4.9",title:"Volunteer Management",fund:false,change:"1:1",old:"4.9",oldT:"Volunteer Management",note:"Direct carry-over; background check and evaluation requirements retained",
+   text:"There shall be a designated team or individual responsible for the agency's volunteer management functions.",
+   eoc:["Provide the position description for the person(s) responsible for volunteer management functions.","Provide a narrative describing the goals and objectives of the volunteer program.","Provide the volunteer management manual used by the agency or the volunteer handbook provided to volunteers.","Provide evidence of recent evaluation of the program and adjustments made informed by evaluation.","Provide evidence of background-check administration in compliance with volunteer background-check policies promulgated by the agency and evidence of volunteer liability coverage.","If unionized, provide a narrative demonstrating how the agency is addressing the division between union and volunteer responsibilities."],
+   rubric:["Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Volunteer Management activities showing they are qualified to perform these duties?","Did the agency describe the goals and objectives for its volunteer program?","Did the agency provide a volunteer manual that includes all required elements listed in the Evidence of Compliance?","Did the agency provide recent evaluation of the volunteer program?","Did the agency describe how the results of the evaluation were reviewed to better meet volunteer program goals and objectives?","Did the agency provide evidence that background check procedures are in place and agency staff administer background checks in compliance with policy?","If unionized, has the agency demonstrated how volunteer responsibilities are distinguished from unionized roles?"]},
+  {ch:5,num:"5.1",title:"Financial Management, Responsibility and Accountability",fund:true,change:"NEW",old:"(NEW umbrella)",oldT:"—",note:"New accountability umbrella; no direct predecessor",
+   text:"There shall be a designated position (person) or team responsible for the agency's Financial Management, Responsibility and Accountability.",
+   eoc:["There shall be a narrative description of the overall financial management strategy utilized by the agency.","Provide the job description and relevant education/experience for the position(s) involved in financial management on behalf of the agency.","Describe how the agency incorporates fairness and accessibility management principles into these fiscal strategies, unless prohibited by state law or local ordinance."],
+   rubric:["Did the agency provide a narrative that describes its overall financial strategy?","Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Financial Management activities showing they are qualified to perform these duties?","Did the agency explain how fairness and accessibility principles are incorporated into their financial strategies?"]},
+  {ch:5,num:"5.2",title:"Legal Authority and Fiscal Policy",fund:true,change:"EXPANDED",old:"5.1",oldT:"Fiscal Policy",note:"Title expanded to include Legal Authority",
+   text:"The agency shall have a defined legal authority for fiscal matters and fiscal policies approved by the body having legal authority.",
+   eoc:["Provide a narrative describing how legal fiscal authority is derived.","Provide a summary of fiscal policies, such as those pertaining to segregation of funds, fund balance and reserve requirements, philosophical use of taxpayer funds, etc.","Describe how policies are shared with new members of the approving authority and staff.","Provide evidence that fiscal policies and procedures have been established and are being followed."],
+   rubric:["Did the agency provide a narrative that explains how its legal fiscal authority is established (e.g. charter, ordinance enabling legislation)?","Was a summary of fiscal policies requested in the Evidence of Compliance provided?","Did the agency describe how fiscal policies are shared with new members of the approving authority and staff?","Did the agency provide evidence verifying that policies and procedures are in place and being followed?"]},
+  {ch:5,num:"5.3",title:"Comprehensive Revenue Policy",fund:true,change:"ELEVATED",old:"5.1.1",oldT:"Comprehensive Revenue Policy",note:"Elevated from sub-standard; now includes scholarship policy",
+   text:"There shall be an established fee policy, periodically updated, regarding fees and charges for programs, services, and admissions.",
+   eoc:["Provide the policy and/or directing documents on fees and charges, the current fee schedules or cost-recovery procedures, and the most recent review or update.","Provide evidence that the policy is administered, ensuring compliance with the approving authority's cost-recovery direction.","Resource allocation strategy procedures shall also be included.","Scholarship policies should be included if applicable."],
+   rubric:["Did the agency provide policy and/or directing documents on fees and charges, the current fee schedules or cost-recovery procedures?","Did the agency provide evidence of the most recent review or update of fees and charges?","Did the agency demonstrate that the cost recovery policy is being implemented based on approving authority direction?","Did the agency provide procedures for resource allocation strategy?","If applicable, did the agency provide its scholarship or financial assistance policy?"]},
+  {ch:5,num:"5.4",title:"Grants and Alternative Funding Strategies",fund:false,change:"ELEVATED",old:"5.1.3",oldT:"Alternative Sources of Funding",note:"Elevated from sub-standard; expanded to include private/nonprofit grants policy",
+   text:"The agency may be able to leverage taxpayer dollars for the benefit of the community by seeking grants and alternative funding sources for projects and services.",
+   eoc:["Provide the policy and procedure for managing grants and alternative funding sources as well as evidence of compliance with grant management and reporting requirements.","Provide the policy for solicitation and management of private, corporate and non-profit support.","Provide evidence of the review and consideration of grant and alternative funding-source opportunities that result in received support which furthers the mission, vision, and strategic priorities of the agency."],
+   rubric:["Did the agency provide a policy and/or procedure that outlines how grants and alternative funding sources are managed and reported?","Did the agency provide a policy for solicitation and management of private, corporate and nonprofit support?","Has the agency demonstrated a process for reviewing and considering grant and alternative funding opportunities that supports the priorities of the agency?"]},
+  {ch:5,num:"5.5",title:"Financial Statements",fund:true,change:"MERGED",old:"5.3, 5.3.1, 5.3.2",oldT:"Accounting System; Financial Statements; Management of Accounts",note:"Consolidated 3 accounting/statements standards into one",
+   text:"Agencies shall analyze financial statements throughout the fiscal year to inform decisions made that ensure the sustainable operation of the agency.",
+   eoc:["Provide a narrative describing how financial statements (could be monthly, quarterly, or annually) are available and used to manage the budget at all levels of the agency, systematically informing agency decision making throughout the fiscal year."],
+   rubric:["Did the agency describe how financial statements and/or reports are available for review?","Did the agency describe how financial reporting supports informed decision-making throughout the fiscal year?"]},
+  {ch:5,num:"5.6",title:"Purchasing Policy",fund:true,change:"ELEVATED",old:"5.2.2",oldT:"Purchasing Procedures",note:"Elevated from sub-standard; adds staff training component",
+   text:"The agency establishes and implements strategic levels of purchasing authority and procurement processes, inclusive of emergency purchasing, to ensure the highest and best use of taxpayer funds.",
+   eoc:["Provide the policy and/or procedures.","Provide a narrative outlining opportunities for staff to learn and train for best-practice procurement policies and procedures."],
+   rubric:["Did the agency provide its purchasing policy and/or procedures?","Did the narrative outline opportunities for staff to learn and train for procurement policies and procedures?"]},
+  {ch:5,num:"5.7",title:"Independent Audit",fund:true,change:"ELEVATED",old:"5.3.4",oldT:"Independent Audit",note:"Elevated from sub-standard; now includes management letter response",
+   text:"There shall be an independent audit of the agency's fiscal activities conducted annually or at a time stipulated by applicable statute or regulation.",
+   eoc:["Provide the most recent independent audit and management letter, or most recent Annual Comprehensive Financial Report and provide the response to the audit recommendations.","Provide narrative evidence of adjustments made to accounting controls in response to audit recommendations, if applicable."],
+   rubric:["Did the agency provide the most recent Annual Comprehensive Financial Report and/or Audit available for review?","Did the agency provide the response to the audit recommendations?","If applicable, did the agency describe any adjustments made in response to recommendations?"]},
+  {ch:5,num:"5.8",title:"Annual or Biennial Budget",fund:true,change:"1:1",old:"5.4",oldT:"Annual or Biennial Budget",note:"Direct carry-over; community/staff participation now explicit",
+   text:"A budget is a plan used to propose and approve use of funding to achieve the mission, vision, and key service delivery objectives of the agency. Staff and community input and/or review opportunities shall be provided.",
+   eoc:["Provide evidence that the annual or biennial budget is built in alignment with the mission, vision, and strategic priorities.","Provide evidence of the opportunity for the staff and community to participate in the budget preparation process."],
+   rubric:["Did the agency provide evidence that demonstrates alignment of the budget with strategic priorities (e.g. budget message or transmittal letter describing the connection between agency priorities and budgetary investment)?","Did the agency provide evidence of public and staff participation in the budget preparation process?"]},
+  {ch:5,num:"5.9",title:"Supplemental/Emergency Appropriations",fund:false,change:"ELEVATED",old:"5.4.2",oldT:"Emergency Appropriations",note:"Elevated from sub-standard",
+   text:"When unforeseen events impact well-planned and executed budgets, supplemental or emergency appropriations may be required.",
+   eoc:["Provide evidence describing a recent example of supplemental and/or emergency appropriations, which may have required budget amendment, followed by the approved process.","If there has not been a need for such a budget adjustment, provide documentation of the approved process or policy to follow when necessary."],
+   rubric:["If applicable, did the agency provide a recent example of a supplemental or emergency appropriation and the steps followed to approve it?","Did the agency provide documentation of an approved process or policy for emergency appropriations to follow when necessary?"]},
+  {ch:5,num:"5.10",title:"Capital Asset Management",fund:true,change:"ELEVATED",old:"5.4.3",oldT:"Capital Improvement Program",note:"Elevated from sub-standard; now requires depreciation/replacement schedule",
+   text:"Agencies shall maintain capital asset depreciation and replacement schedules covering facilities, playgrounds, pavilions, fleet, etc.",
+   eoc:["Provide the capital asset depreciation and replacement schedule.","Provide evidence that the replacement schedule has forecasted future expenditures to sufficiently fund future replacements."],
+   rubric:["Did the agency provide a capital asset depreciation and replacement schedule?","Did the agency provide the replacement schedule that includes forecasted future expenditures to sufficiently fund future replacements?"]},
+  {ch:6,num:"6.1",title:"Recreation Program Responsibility and Accountability",fund:true,change:"NEW",old:"(NEW umbrella)",oldT:"—",note:"New accountability umbrella for programming; no direct predecessor",
+   text:"There shall be a designated position (individual) or team responsible for the agency's Recreation Programs and Services.",
+   eoc:["Provide the job description and relevant education/experience for the position(s) involved in recreation program management on behalf of the agency."],
+   rubric:["Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Recreation Program activities showing they are qualified to perform these duties?"]},
+  {ch:6,num:"6.2",title:"Program and Service Determinants (Components)",fund:true,change:"MERGED",old:"6.2, 6.3, 6.3.1",oldT:"Program Objectives; Program and Service Determinants; Outreach to Diverse/Underserved Populations",note:"Consolidated 3 standards; determinants framework retained; diversity outreach embedded",
+   text:"A strategic, systematic, and collaborative approach shall be taken in determining what programs and services shall be provided by the agency.",
+   eoc:["Demonstrate recurring staff training with an outline and dated sign-in sheet for the most recent training.","Provide documentation and examples demonstrating that six (6) program and service determinants are used in providing strategically managed programs and services. Items 1, 2, 3, 5 and 6 should be submitted in the form of a matrix."],
+   rubric:["Did the agency provide evidence of staff training on the six program and service determinants?","Did the agency provide a matrix/spreadsheet answering the items identified in 1, 2, 3, 5 and 6?","Did the agency provide evaluations from at least 5 programs from a variety of program areas and how the evaluations impacted decision-making?"]},
+  {ch:6,num:"6.3",title:"Recreation Program Plan (RPP)",fund:true,change:"1:1",old:"6.1",oldT:"Recreation Programming Plan",note:"Direct carry-over; SMART objectives and lifecycle management now explicit",
+   text:"The agency shall have a Recreation Program Plan (RPP) that furthers the implementation of the recreation and leisure objectives of the Park and Recreation Master Plan and Strategic Plan, that is reviewed and updated minimally every three (3) years.",
+   eoc:["Provide Recreation Program Plan including: cover page, date of approval, table of contents, introduction; matrix of current programs indicating the target audience; annual action plans showing program objectives in SMART format; description or diagram of the processes used to plan, develop, assess and evaluate new and existing programs."],
+   rubric:["Did the agency provide a complete RPP (based on the Evidence of Compliance)?"]},
+  {ch:6,num:"6.4",title:"Program Evaluation – Staff Training & Use in Informing Programmatic Decision Making",fund:true,change:"MERGED",old:"6.5, 6.5.1",oldT:"Program Evaluation; Outcome Assessment",note:"Merged evaluation standards; staff training requirement added",
+   text:"The agency shall provide training on how to evaluate programs, services and facilities for personnel involved in managing facilities and delivering programs and services.",
+   eoc:["Provide examples of recent evaluation trainings completed by the agency, including curriculum content, training dates and participant lists.","Provide evidence that programs conducted are making progress toward outcomes desired.","Provide evidence that programmatic decision-making is informed by evaluation results."],
+   rubric:["Did the agency provide recent evaluation trainings based on the Evidence of Compliance?","Did the agency provide evidence that programs are making progress toward desired outcomes?","Does the agency make programming decisions based on evaluation results?"]},
+  {ch:6,num:"6.5",title:"Cooperative Recreation Programming",fund:false,change:"1:1",old:"6.6",oldT:"Cooperative Programming",note:"Direct carry-over",
+   text:"Agencies often partner with other organizations to deliver programs or services to the community. Such collaboration or cooperation shall be documented via formal agreement.",
+   eoc:["Provide current examples of cooperative programming with documentation, such as Memoranda of Understanding (MOU), Memoranda of Agreement (MOA), or partnership agreements."],
+   rubric:["Did the agency provide examples of cooperative programming services?"]},
+  {ch:6,num:"6.6",title:"Piloting New Programs and Services",fund:false,change:"NEW",old:"(NEW)",oldT:"—",note:"New standard; no direct predecessor",
+   text:"Agencies shall seek to understand the community's needs and preferences for recreational programs and services by piloting new or trial programs.",
+   eoc:["Provide examples of new or trial programs or services employed by the agency.","Provide a narrative describing the evaluative process, results, and subsequent decision making informed by ongoing evaluation results."],
+   rubric:["Did the agency provide evidence of pilot programs?","Did the agency describe the evaluation process, results and any decision-making from the pilot programs?"]},
+  {ch:7,num:"7.1",title:"Facility and Land Use Responsibility and Accountability",fund:true,change:"NEW",old:"(NEW umbrella)",oldT:"—",note:"New accountability umbrella for facilities; no direct predecessor",
+   text:"There shall be a designated position (individual) or team responsible for the agency's facilities and land use functions.",
+   eoc:["Provide a narrative description of the overall facilities and land use management strategy utilized by the agency.","Provide the job description and relevant education/experience for the position(s) involved in facilities and land use management efforts on behalf of the agency."],
+   rubric:["Did the agency describe the overall facility and land use management strategy?","Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Facilities and Land Use Management activities showing they are qualified to perform these duties?"]},
+  {ch:7,num:"7.2",title:"Park and Recreation Land Acquisition and Disposal",fund:true,change:"EXPANDED",old:"7.1",oldT:"Parkland Acquisition Procedures",note:"Expanded to include disposal; policy narrative requirement added",
+   text:"Agencies shall have established and implemented park land acquisition and disposal policies and procedures.",
+   eoc:["Provide the policy(ies) established that govern procedures followed to acquire or dispose of parkland, including citation of legal authority over final decision making.","Provide a narrative describing how the agency acquires lands and facilities in conformance with the Park Master Plan and strategic objectives. Provide evidence that the most recent acquisition complied with these policies and procedures, if within the last 10 years."],
+   rubric:["Did the agency provide a policy that governs the procedures of acquisition or disposal of parkland?","Did the agency provide a policy that includes citation of legal authority over final decision making?","Did the agency describe how potential acquisitions tie into the master plan and strategic objectives, including any requirements for public engagement opportunities, bidding, etc.?","Did the agency provide documentation from the last acquisition, if within the last 10 years?"]},
+  {ch:7,num:"7.3",title:"Park and Recreation Property Development",fund:true,change:"1:1",old:"7.2",oldT:"Area and Facilities Development Policies and Procedures",note:"Direct carry-over; now requires evidence of most recent project compliance",
+   text:"Agencies shall have established and implemented park land development policies and procedures.",
+   eoc:["Provide the policy(ies) established that govern procedures followed to plan and develop parkland, including citation of legal authority over final decision making.","Provide a narrative describing how the agency develops lands and facilities in conformance with the Park Master Plan and strategic objectives.","Provide evidence that the most recent development project complied with these policies and procedures."],
+   rubric:["Did the agency provide a policy that governs the procedures followed to plan and develop parkland, including citation of legal authority over final decision making?","Did the agency describe how the agency develops lands and facilities in conformance with the Park Master Plan and strategic objectives, including any requirements for public engagement opportunities, bidding, post-acquisition, etc.?","Did the agency provide evidence that the most recent development project complied with these policies and procedures?"]},
+  {ch:7,num:"7.4",title:"Maintenance and Operations Management",fund:true,change:"1:1",old:"7.5",oldT:"Maintenance and Operations Management Standards",note:"Direct carry-over; classification by intensity of use retained",
+   text:"Agencies shall set specific maintenance standards for parks, facilities, and special areas to ensure maintenance efforts reflect community preferences.",
+   eoc:["Provide the established maintenance standards and plan for parks, facilities and specialty areas, including evidence of park maintenance classification according to the intended use of the area.","Provide the most recent review or update of the standards, within the last five (5) years.","Provide a narrative addressing implementation of the plan."],
+   rubric:["Did the agency provide the established maintenance standards (based on the Evidence of Compliance)?","Did the agency provide the most recent review or update of the maintenance standards and was it within the past 5 years?","Did the agency describe how they are implementing the plan?"]},
+  {ch:7,num:"7.5",title:"Preventative Maintenance Plan",fund:false,change:"ELEVATED",old:"7.5.2",oldT:"Preventative Maintenance",note:"Elevated from sub-standard; now requires inspection evidence for 3 facilities",
+   text:"Agencies shall consider employee and patron safety, continuity of operations, and life cycle costs of operating mechanical systems, facilities, and equipment.",
+   eoc:["Provide the preventative maintenance plan and examples of detailed procedures for identified parks, recreation areas and facilities with special attention given to playground equipment, aquatic facilities, pedestrian pathways, building infrastructure and other high impact assets.","Provide evidence of completed (i.e. work orders), recent inspections and safety checks for a minimum of 3 separate facilities/areas.","Demonstrate how these inspections results are used by the agency in decision-making."],
+   rubric:["Did the agency provide the preventative maintenance plan(s) and procedures, including examples, as outlined in the Evidence of Compliance?","Did the agency provide completed inspections and safety checks for a minimum of 3 separate facilities/areas?","Did the agency demonstrate how the results of the inspections are used in decision making?"]},
+  {ch:7,num:"7.6",title:"Fleet Management Plan",fund:false,change:"1:1",old:"7.6",oldT:"Fleet Management",note:"Direct carry-over",
+   text:"Fleet management planning results in efficient and effective use of taxpayer funding as well as safe operation of equipment by staff. Agencies shall have a plan for maintenance and replacement of vehicles and rolling equipment.",
+   eoc:["Provide fleet management plan.","Provide evidence of implementation of the plan, could be inspections, maintenance records kept, etc."],
+   rubric:["Did the agency provide the Fleet Management Plan?","Did the agency provide evidence of implementation of the plan?"]},
+  {ch:7,num:"7.7",title:"Natural Resource Management",fund:false,change:"EXPANDED",old:"7.8",oldT:"Natural Resource Management Plan",note:"Direct carry-over; community outreach/education now required",
+   text:"Agencies managing parks and open space properties shall have implemented natural resource management plans that protect the environment.",
+   eoc:["Provide the natural resource management plan(s) and procedures as applicable.","Provide examples of outreach and education to the community on practices that protect these natural resources."],
+   rubric:["Did the agency provide the Natural Resource Management Plan and procedures?","Did the agency provide examples of outreach and education to the community on how they protect natural resources?"]},
+  {ch:8,num:"8.1",title:"Risk Management Responsibility and Strategy",fund:true,change:"MERGED",old:"9.1, 9.1.1",oldT:"Risk Management Policy; Risk Management Plan and Procedures",note:"Merged risk policy + plan; moved from Ch. 9 to Ch. 8",
+   text:"There shall be a designated person or team responsible for the agency's Risk Management functions. This position/team shall lead the agency in implementation of risk management strategies following a risk identification/strategy development/evaluation/repeat cycle.",
+   eoc:["Provide the job description and relevant education/experience for the position(s) involved in risk management on behalf of the agency.","Provide a narrative describing how risks are identified, assessed, and managed/transferred, including but not limited to facility inspection systems and pre-program risk assessments.","Provide the most recent risk assessment data report.","Provide recent evidence of up to two changes to policy, procedure, or practice made as a result of the risk management process, if changes are made."],
+   rubric:["Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Risk Management activities showing they are qualified to perform these duties?","Did the agency describe how risks are identified, assessed and managed?","Did the agency provide the risk assessment data report?","If changes were made, did the agency provide evidence of changes to policy, procedure or practice as a result of risk management process?"]},
+  {ch:8,num:"8.2",title:"Codes, Laws, Ordinances, Policies, and/or Rules",fund:true,change:"1:1",old:"8.1",oldT:"Codes, Laws, and Ordinances",note:"Direct carry-over; now explicit about patron availability",
+   text:"There shall be codes, laws, ordinances, policies, and/or rules in place to protect the public's health, safety, and welfare while using agency's facilities or property.",
+   eoc:["Provide documentation of the codes, laws, and ordinances that pertain specifically to areas and facilities under the jurisdiction of the agency and describe how they are posted or otherwise readily available to park patrons."],
+   rubric:["Did the agency provide documentation of codes, laws, and ordinances that apply to areas and facilities?","Did the agency describe how the codes, laws and ordinances are readily available to park patrons?"]},
+  {ch:8,num:"8.3",title:"General Security Plan",fund:true,change:"1:1",old:"8.5",oldT:"General Security Plan",note:"Direct carry-over; staff training narrative added",
+   text:"Agencies shall have documented a general security plan and procedures that may include how it intends for staff to manage lock and key systems, alarm systems, opening and closing procedures, fire alarm and fire suppression systems, and emergency evacuation procedures.",
+   eoc:["Provide the agency's general security plan or compilation of security plans from each major area, building or facility with information on the most recent review or update.","Provide a narrative detailing how planned elements are trained. If you are unable to share plans due to security limitations, submit a redacted or summary version showing table of contents and core procedures."],
+   rubric:["Did the agency provide a general security plan (based on the Evidence of Compliance)?","Did the agency describe how employees are trained on the general security plan?"]},
+  {ch:8,num:"8.4",title:"Personnel Safety Training",fund:true,change:"ELEVATED",old:"8.5.3",oldT:"Personnel Safety Training",note:"Elevated from sub-standard",
+   text:"There shall be ongoing and routine safety training employed by the agency and available to employees at all levels within the organization.",
+   eoc:["Provide evidence of staff training opportunities identified in the standard."],
+   rubric:["Did the agency provide evidence of personnel safety trainings to all levels within the organization?"]},
+  {ch:8,num:"8.5",title:"Disruptive Behavior",fund:false,change:"ELEVATED",old:"8.5.2",oldT:"Disruptive Behavior Policy",note:"Elevated from sub-standard; law enforcement relationship narrative added",
+   text:"Agencies shall have established policies and enforcement procedures for the handling of disruptive behavior on agency property.",
+   eoc:["Provide current procedures regarding handling of disruptive behavior.","Include a narrative describing the relationship with law enforcement and roles of both agency staff and law enforcement officers in managing incidents."],
+   rubric:["Did the agency provide the procedure for handling disruptive behavior?","Did the agency describe the relationship and roles with law enforcement?"]},
+  {ch:8,num:"8.6",title:"Event Planning and Management",fund:false,change:"ELEVATED",old:"8.5.4",oldT:"Event and Tournament Management",note:"Elevated from sub-standard",
+   text:"Agencies shall coordinate safety and security details for special events, facilities, etc. with local law enforcement, public works, and other appropriate agencies.",
+   eoc:["Provide a recent example of coordination with other departments/agencies on traffic control, parking plans, crowd control, safety, and security for activities and events hosted or facilitated by the agency.","If you are unable to share event security plans, please note that and describe outside agency engagement in the process."],
+   rubric:["Did the agency demonstrate examples of coordination with outside departments and/or agencies as discussed in the Evidence of Compliance?"]},
+  {ch:8,num:"8.7",title:"Accidents/Incidents",fund:true,change:"EXPANDED",old:"9.2",oldT:"Incident Reports",note:"Moved from Ch. 9; now requires 5-year history for reaccreditation",
+   text:"Agencies shall document and analyze accident/incident reports as a part of the risk identification processes.",
+   eoc:["Provide three accident/incident reports from each of the last five years. If seeking initial accreditation, a minimum of one year of evidence is required.","Provide a narrative describing at least three examples that demonstrate how accident/incident data informs decisions made to reduce risk after an incident or accident."],
+   rubric:["Did the agency provide three accident/incident reports per year (If seeking initial accreditation, over 1 year. If seeking reaccreditation, over 5 years.)?","Did the agency describe at least three examples of data-informed decision-making to reduce risk after an incident or accident?"]},
+  {ch:8,num:"8.8",title:"Emergency Management Plan",fund:true,change:"MERGED",old:"8.6, 8.6.1",oldT:"Emergency Action Plan; Local Emergency Plan",note:"Merged emergency plan standards; annual training evidence now required",
+   text:"Agencies shall have in place and practiced a plan to manage emergencies or natural disasters as they arise. Staff shall be trained on the plan and will practice scenarios intended to ensure professional response when an incident occurs.",
+   eoc:["Provide the applicable emergency management plan with the most recent date of approval. If, due to security concerns, the emergency management plan is not available for public review, provide the emergency management plan table of contents.","Provide documentation of in-service training programs on emergency management, including a dated outline of the presentation topics and a roster of participants. In-service training and/or drill practice will be considered met if conducted at least annually."],
+   rubric:["Did the agency provide emergency management plan or the emergency management plan table of content (if the plan is not available for public review)?","Did the agency provide documentation of emergency management plan annual training (based on the Evidence of Compliance)?"]},
+  {ch:8,num:"8.9",title:"Crisis Response Management",fund:false,change:"EXPANDED",old:"8.6.3 / 9.3",oldT:"Crisis Management elements",note:"Combined crisis response and communication elements",
+   text:"Crises are likely events, whether they are associated with larger emergency events such as natural disasters, man-made events, or tragic accidents like accidental drownings. Agencies shall have strategies in place and a practice to mitigate further stressors in the aftermath of a crisis.",
+   eoc:["Provide evidence of crisis response management strategies employed by the agency. Examples of strategies may include an employee assistance program, crisis response activities, partnerships with first responders, emergency management organizations, or counseling agencies, and the like."],
+   rubric:["Did the agency provide evidence of crisis management strategies (based on the Evidence of Compliance)?"]},
+  {ch:9,num:"9.1",title:"Marketing, Communications, and Community Engagement Responsibility",fund:false,change:"MERGED",old:"3.4.1, 3.4.3.1",oldT:"Public Information Responsibility; Marketing Responsibility",note:"Merged two responsibility standards; now includes community engagement function",
+   text:"There shall be a designated position (individual) or team responsible for the agency's Marketing, Communications, and Community Engagement functions.",
+   eoc:["Provide the job description and relevant education/experience for the position(s) involved in marketing, communications, and community engagement activities on behalf of the agency.","Provide a narrative description of marketing and communications strategy utilized by the agency. Describe how different communities are represented thoughtfully and intentionally in all aspects of marketing."],
+   rubric:["Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Marketing, Communications and Community Engagement activities showing they are qualified to perform these duties?","Did the agency describe the marketing and communications strategy?","Did the agency describe efforts to ensure community representation in marketing campaigns?"]},
+  {ch:9,num:"9.2",title:"External Marketing and Communications",fund:true,change:"MERGED",old:"3.4.3, 3.4.3.2",oldT:"Marketing Plan; Social Media Policy",note:"Consolidated marketing plan and social media policy into outcome-based standard",
+   text:"Communications and community engagement activities shall reach a wide array of community members representative of community demographics. Changes to strategy shall be informed by evaluation of efforts.",
+   eoc:["Provide evidence of data collection, analysis, and decision-making related to marketing and communications functions that result in improvements in external communications and community engagement efforts that reach an audience representative of the community.","If applicable, provide a narrative describing the relationship with the media and in what ways the relationship impacts brand, image, and service reach."],
+   rubric:["Did the agency provide evidence of established data collection, analysis, and decision-making process that extends external communication efforts to the community?","If applicable, did the agency describe the relationship with the media?"]},
+  {ch:9,num:"9.3",title:"Internal Communications",fund:false,change:"EXPANDED",old:"3.3",oldT:"Internal Communication",note:"Direct carry-over; evaluation and improvement cycle now explicit",
+   text:"Agencies shall establish effective internal communications strategies and tactics to ensure key information reaches employees at all levels within the organization.",
+   eoc:["Provide a communication matrix illustrating how internal communications are managed by the agency.","Provide the most recent evaluation of internal communications efforts.","Provide evidence of changes made to communications strategies in response to evaluation data."],
+   rubric:["Did the agency provide a communication matrix on how internal communications are managed?","Was the most recent evaluation of internal communications provided?","Did the agency provide evidence of changes made to communications strategies in response to evaluation data?"]},
+  {ch:9,num:"9.4",title:"Communicating the Essentiality and Impact of Leisure Programs (Advocacy)",fund:false,change:"EXPANDED",old:"6.4",oldT:"Community Education for Leisure Process",note:"Moved from Ch. 6; advocacy and elected official education now emphasized",
+   text:"The agency shall have an ongoing and systematic process to educate the general population and elected officials about the benefits, values, outcomes, and positive impacts of leisure and recreation services provided.",
+   eoc:["Provide examples of the methods utilized by the agency to educate and inform the community and/or elected officials on the benefits, values, outcomes, and impacts of leisure and recreation services.","Provide the last review (qualitative and/or quantitative) of effectiveness of these advocacy efforts."],
+   rubric:["Did the agency provide evidence of methods utilized by the agency to educate and inform the community and/or elected officials on the benefits, values, outcomes and impacts of leisure and recreation services?","Did the agency provide the last review of these efforts?"]},
+  {ch:9,num:"9.5",title:"Community Engagement",fund:true,change:"EXPANDED",old:"3.4.2",oldT:"Community Relations Plan",note:"Renamed and expanded; goes beyond plan to active engagement strategies",
+   text:"Community engagement techniques are used by agencies to invite the community to influence agency strategic direction, facility and amenity improvements, and programming. Agencies shall have implemented thoughtful strategies to engage and involve the community on a regular basis.",
+   eoc:["Provide a narrative describing community engagement strategies employed by the agency to regularly connect with members of the community in an effort to better understand their needs for park and recreation services.","Describe how engagement is adjusted based on the specific community the agency is trying to reach."],
+   rubric:["Did the agency describe community engagement strategies (based on the Evidence of Compliance)?","Did the agency describe how engagement is adjusted based on the specific communities being reached?"]},
+  {ch:9,num:"9.6",title:"Crisis Communications",fund:true,change:"EXPANDED",old:"8.6.2",oldT:"Emergency Risk Communications Plan and Procedures",note:"Moved from Ch. 8 to Ch. 9; now requires templates and timeline",
+   text:"Provide agency strategies and/or protocols developed for managing internal and external communications during a crisis situation. Provide evidence that appropriate staff have been trained on these strategies and/or protocols.",
+   eoc:["Provide agency strategies and/or protocols developed for managing internal and external communications during a crisis situation.","Provide evidence that appropriate staff have been trained on these strategies and/or protocols.","Provide three communication templates (e.g., press releases, staff talking points, public alerts, social media posts) and a timeline outlining how and when communication is delivered during various phases of a crisis."],
+   rubric:["Did the agency provide strategies, procedures and/or protocols for crisis communication (internal and external)?","Did the agency provide evidence of staff training on the crisis communication strategies?","Did the agency provide three communication templates and a timeline outlining how and when communication is delivered during various phases of a crisis?"]},
+  {ch:10,num:"10.1",title:"Evaluation, Assessment, and Research Responsibility",fund:false,change:"NEW",old:"(NEW umbrella)",oldT:"—",note:"New accountability umbrella; no direct predecessor",
+   text:"There shall be a designated position (individual) or team responsible for the agency's Evaluation, Assessment, and Research. This person/team shall provide strategies and technical expertise in relation to research, data collection, data analysis, and the development of action plans from the data collected.",
+   eoc:["Provide the job description and relevant education/experience for the position(s) involved in evaluation, assessment, and research activities on behalf of the agency.","Provide examples of recent evaluation, assessment and research training completed by the individual and agency, including curriculum content, training dates and participant lists."],
+   rubric:["Did the agency provide job description(s) and the education/experience summary for the individual or team responsible for Evaluation, Assessment, and Research activities showing they are qualified to perform these duties?","Did the agency provide examples of recent evaluation, assessment or research training (based on the Evidence of Compliance)?"]},
+  {ch:10,num:"10.2",title:"Systematic Data Collection",fund:true,change:"MERGED",old:"10.4, 10.5, 10.5.2",oldT:"Needs Assessment; Trends Analysis; Community Inventory",note:"Consolidated needs assessment, trends, and inventory into one standard",
+   text:"Agencies cannot fully meet community needs without collecting data for programs, services and operations they manage. Data shall be collected that supports the day-to-day operational aspects of an agency.",
+   eoc:["Provide a description of recent needs assessments conducted (e.g., surveys, focus groups, stakeholder interviews).","Provide documentation and examples demonstrating that needs assessments are conducted on a routine basis.","Provide documentation of community demographic data and user population trends.","Provide an inventory of existing parks, facilities, and services (including those provided by partners).","Provide reports or tools used to track national and local recreation trends."],
+   rubric:["Did the agency provide recent needs assessments conducted (e.g. surveys, focus groups, interviews)?","Did the agency provide documentation and examples that needs assessments are conducted on a routine basis?","Did the agency provide documentation of community demographic data and user population trends?","Did the agency provide an inventory of existing parks, facilities and services including those provided through partnerships?","Did the agency provide examples of reports or tools used to track national and local recreation trends?"]},
+  {ch:10,num:"10.3",title:"Systematic Data Analysis and Action",fund:true,change:"MERGED",old:"10.1, 10.3, 10.3.1",oldT:"Systematic Evaluation Processes; Level of Service Analysis; LOS Standards",note:"Consolidated evaluation and LOS standards; NRPA Park Metrics benchmarking now explicit",
+   text:"The agency shall at a minimum, no less than once every five years, evaluate needs assessment data with available assets, and trends, to identify existing and projected gaps in service or programming.",
+   eoc:["Provide benchmarking comparisons of the agency's programs, services, and facilities with local community assets, when feasible, using NRPA's Park Metrics.","Provide analysis or summary of service gaps based on collective data and community input and documentation of action steps taken in response to findings.","Provide prioritized list of improvements or investments based on gap analysis (at minimum every five years).","Describe the identification of outcomes and evidence of improvements or changes in service delivery made as a result of the needs-assessment and trends analysis process.","Provide at least one report that summarizes the data collected and action taken.","Provide evidence of presentation of at least one report to approving authority/policy body.","Provide evidence of evaluation process review to identify strengths and weaknesses of the process."],
+   rubric:["Did the agency provide benchmarking comparisons of its programs, services and facilities with local community assets, using NRPA's Park Metrics when feasible?","Did the agency provide an analysis or summary identifying service gaps based on collective data and community input and document the action steps taken in response to findings?","Did the agency provide a prioritized list of improvements or investments based on gap analysis of how these trends relate to the agency and its community (at minimum every five years)?","Did the agency describe the identification of outcomes and evidence of improvements or changes in service delivery made as a result of the needs assessment and trend analysis?","Did the agency provide at least one report summarizing data collected and action taken based on results found?","Did the agency provide evidence that at least one report was presented to the approving authority or policy body?","Did the agency provide evidence of evaluation process review?"]},
+  {ch:10,num:"10.4",title:"Investigation and Evidence Based Decision-Making/Educational Projects",fund:false,change:"ELEVATED",old:"10.5.3",oldT:"Research or Educational Projects",note:"Elevated from sub-standard; 5-year cycle now explicit",
+   text:"The agency shall conduct or participate in research projects that help develop, evaluate and test new programs, processes or facilities. This standard requires a project to be completed once every five (5) years.",
+   eoc:["The agency shall participate in at least one research or student-learning project within the past five (5) years. Summarize each investigation or project within the narrative.","Provide a report outlining the research or project goals, process, and outcomes for each investigation, project or evidence-based program.","Where feasible, data-informed decisions made by the agency shall be described."],
+   rubric:["Did the agency provide documentation and description of a research investigation or educational project within the last five years?","Did the agency provide a report provided outlining, at minimum, the project goals, process, and outcomes?","If applicable, did the agency provide documentation of a change that resulted from the resulting project data?"]}
+];
+
+var SSCORES = {};
+var SNOTES  = {};
+var SVIEW   = 'grid';
+var SDETAIL = null;
+
+var CHANGE_COLORS = {
+  "1:1":     {bg:"#dbeafe",color:"#1e40af"},
+  "ELEVATED":{bg:"#ede9fe",color:"#5b21b6"},
+  "MERGED":  {bg:"#fef3c7",color:"#92400e"},
+  "EXPANDED":{bg:"#f3f4f6",color:"#374151"},
+  "NEW":     {bg:"#dcfce7",color:"#166534"}
+};
+var STATUS_COLORS = {"":"#f3f4f6","gap":"#fee2e2","partial":"#fef3c7","complete":"#dcfce7"};
+var STATUS_TEXT   = {"":"#6b7280","gap":"#dc2626","partial":"#d97706","complete":"#16a34a"};
+var STATUS_LABELS = {"":"Not Started","gap":"Gap","partial":"Partial","complete":"Complete"};
+
+/* ═══════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════ */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.main-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'evaluator') { renderEvalList(); updateEvalStats(); }
+}
+
+/* ═══════════════════════════════════════════════
+   STANDARDS TAB – render chapters
+═══════════════════════════════════════════════ */
+var CH_INFO = {
+  1:{name:"Agency Mission and Purpose",intro:"The mission establishes the organizational purpose, and goals and objectives establish the strategic direction. Organization values affect how the agency, through its leadership and staff, relate to other governing bodies, agencies, and organizations. Strategic planning is vital to high performing organizations and involves organizational and community input to identify and come to agreement on vision, mission, and values."},
+  2:{name:"Administration and Organizational Resources",intro:"This chapter is all about capacity management. Advisory boards and commissions are utilized to influence, direct, and, often, approve policy, strategy, and financial decisions necessary for the agency to carry out its mission. An effective administrative reporting system ensures communications throughout the chain of command. Engaging in the use of right-fit-to-the-agency technological resources enhances efficiency and effectiveness."},
+  3:{name:"Community and Park Planning",intro:"Planning activities are essential to effective agency management. Complex demands for services and limited public resources require that the park and recreation agency carefully research operational alternatives and plan future programs. The Agency Administrator/Director should be closely involved in the planning process."},
+  4:{name:"Human Resources Planning, Workforce Development, and Culture",intro:"To produce the level of quality that customers have come to expect, organizations must employ qualified employees. Qualified personnel bring to the organization the knowledge, skills, and abilities in specialized areas that are needed to design and deliver the benefits that customers seek from recreation and park experiences."},
+  5:{name:"Financial Management, Responsibility, and Accountability",intro:"Financial management is the process of planning for, acquiring, and using funds to achieve predetermined organizational goals and objectives. Parks and recreation managers must possess the ability to secure, organize, and control the financial resources of the organization to ensure the success and survival of their organizations."},
+  6:{name:"Programs and Services Management",intro:"A program delivers recreation and leisure benefits to participants. High-quality programming is a dynamic process. Programming should be intentional and evidence-based to justify that resources are being used effectively and efficiently. The Recreation Program Plan (RPP) includes all elements and services of the public park and recreation agency's programming functions."},
+  7:{name:"Facilities and Land Use Management",intro:"Resource planning is a process focusing on natural and physical resources. The planning, development and management of physical resources are functions of all park and recreation managers. High-performing maintenance operations organizations ensure quality experiences through well-managed spaces and places."},
+  8:{name:"Law, Risk Management, Safety, and Security",intro:"Laws and ordinances provide the foundation for controlling activities and behavior within the jurisdiction of the agency. A comprehensive risk management plan is essential to minimize legal liabilities and personal injuries. Risk management is an on-going process that must be systematically evaluated for effectiveness and adjustments made as appropriate."},
+  9:{name:"Marketing, Communications, and Community Engagement",intro:"Public information, community relations, marketing, and community engagement are complementary functions within the agency. To operate effectively, a park and recreation agency must have the support of its community. Effective market research, planning, product and program development, strategies, and objectives for delivering demand-driven, high-quality programs and services contribute to successful park and recreation operations."},
+  10:{name:"Evaluation, Assessment, and Research",intro:"The skills to assess and evaluate are essential to compete successfully for external and internal resources. Evaluation, assessment or performance measurement, and research are systematic processes that park and recreation professionals use to better understand the impacts of their efforts on the communities they serve. NRPA developed Park Metrics, which is the only national benchmarking tool for the park and recreation profession."}
+};
+
+function stdToggle(header) {
+  var body = header.nextElementSibling;
+  var isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.setAttribute('aria-expanded', String(!isOpen));
+}
+
+function buildStdChapters() {
+  var container = document.getElementById('std-chapters');
+  var html = '';
+  for (var c = 1; c <= 10; c++) {
+    var info = CH_INFO[c];
+    var chStds = STDS.filter(function(s){ return s.ch === c; });
+    html += '<section id="s-ch'+c+'">';
+    html += '<div class="chapter">';
+    html += '<div class="chapter-header"><h2>Chapter '+c+' &mdash; '+info.name+'</h2></div>';
+    html += '<div class="chapter-intro"><details><summary>Chapter Introduction</summary><p>'+info.intro+'</p></details></div>';
+    chStds.forEach(function(s) {
+      var fc = s.fund ? ' fundamental' : '';
+      html += '<div class="standard'+fc+'">';
+      html += '<div class="standard-header" onclick="stdToggle(this)" aria-expanded="false">';
+      html += '<span class="std-num">'+s.num+'</span>';
+      html += '<span class="std-title">'+s.title+'</span>';
+      if (s.fund) html += '<span class="f-badge">★ Fundamental</span>';
+      html += '<span class="chevron">▾</span>';
+      html += '</div>';
+      html += '<div class="standard-body">';
+      html += '<p class="standard-text">'+s.text+'</p>';
+      html += '<div class="section-label">Required Evidence of Compliance</div>';
+      html += '<ul class="eoc-list">';
+      s.eoc.forEach(function(e){ html += '<li>'+e+'</li>'; });
+      html += '</ul>';
+      html += '<div class="rubric-box"><div class="section-label">Appendix A – Rubric Questions</div><ul class="rubric-list">';
+      s.rubric.forEach(function(r){ html += '<li>'+r+'</li>'; });
+      html += '</ul></div>';
+      html += '</div></div>';
+    });
+    html += '</div></section>';
+  }
+  container.innerHTML = html;
+
+  // sticky nav scroll spy
+  var sections = document.querySelectorAll('#tab-standards section[id]');
+  var navLinks  = document.querySelectorAll('#std-nav a[data-sec]');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting) {
+        navLinks.forEach(function(a){
+          a.classList.toggle('active', a.dataset.sec === entry.target.id);
+        });
+      }
+    });
+  }, {rootMargin:'-30% 0px -65% 0px'});
+  sections.forEach(function(s){ obs.observe(s); });
+
+  navLinks.forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var t = document.getElementById(a.dataset.sec);
+      if (t) t.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   EVALUATOR TAB
+═══════════════════════════════════════════════ */
+function getStdStatus(std) {
+  var answers = std.rubric.map(function(r,i){ return SSCORES[std.num+'__'+i] || ''; });
+  if (answers.every(function(a){ return a === ''; })) return '';
+  if (answers.some(function(a){ return a === 'gap'; })) return 'gap';
+  if (answers.every(function(a){ return a === 'complete'; })) return 'complete';
+  return 'partial';
+}
+
+function updateEvalStats() {
+  var c=0,p=0,g=0,ns=0;
+  STDS.forEach(function(s){
+    var st = getStdStatus(s);
+    if (st==='complete') c++;
+    else if (st==='partial') p++;
+    else if (st==='gap') g++;
+    else ns++;
+  });
+  document.getElementById('e-complete').textContent = c;
+  document.getElementById('e-partial').textContent  = p;
+  document.getElementById('e-gap').textContent      = g;
+  document.getElementById('e-ns').textContent       = ns;
+  var pct = Math.round((c/STDS.length)*100);
+  document.getElementById('e-pct').textContent = pct;
+  document.getElementById('e-bar').style.width = pct+'%';
+}
+
+function getFiltered() {
+  var ch  = document.getElementById('e-filter-ch').value;
+  var st  = document.getElementById('e-filter-status').value;
+  var fu  = document.getElementById('e-filter-fund').value;
+  return STDS.filter(function(s){
+    if (ch && String(s.ch) !== ch) return false;
+    if (st !== '' && st !== undefined && getStdStatus(s) !== st) return false;
+    if (fu === 'fund' && !s.fund) return false;
+    if (fu === 'nonfund' && s.fund) return false;
+    return true;
+  });
+}
+
+function setView(v) {
+  SVIEW = v;
+  document.getElementById('btn-grid').classList.toggle('active', v==='grid');
+  document.getElementById('btn-list').classList.toggle('active', v==='list');
+  renderEvalList();
+}
+
+function renderEvalList() {
+  var filtered = getFiltered();
+  var area = document.getElementById('eval-list-area');
+  var detailArea = document.getElementById('eval-detail-area');
+  detailArea.classList.add('hidden');
+  area.classList.remove('hidden');
+
+  if (SVIEW === 'grid') {
+    var html = '<div class="eval-grid">';
+    filtered.forEach(function(s){
+      var st = getStdStatus(s);
+      var cc = CHANGE_COLORS[s.change];
+      var answered = s.rubric.filter(function(r,i){ return SSCORES[s.num+'__'+i]; }).length;
+      html += '<div class="eval-card" style="background:'+STATUS_COLORS[st]+'" onclick="openDetail(\''+s.num+'\')">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
+      html += '<span class="card-num">'+s.num+'</span>';
+      if (s.fund) html += '<span style="background:var(--teal);color:#fff;border-radius:10px;padding:1px 7px;font-size:.68rem;font-weight:700">F</span>';
+      html += '</div>';
+      html += '<div class="card-title">'+s.title+'</div>';
+      html += '<div class="card-meta">';
+      html += '<span class="ctag" style="background:'+cc.bg+';color:'+cc.color+'">'+s.change+'</span>';
+      html += '<span style="font-size:.75rem;color:'+STATUS_TEXT[st]+'">'+answered+'/'+s.rubric.length+' ✓</span>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+    area.innerHTML = html;
+  } else {
+    var html = '<table class="eval-table"><thead><tr><th>#</th><th>Title</th><th>F</th><th>Change</th><th>Old Std(s)</th><th>Status</th><th>Progress</th></tr></thead><tbody>';
+    filtered.forEach(function(s){
+      var st = getStdStatus(s);
+      var cc = CHANGE_COLORS[s.change];
+      var answered = s.rubric.filter(function(r,i){ return SSCORES[s.num+'__'+i]; }).length;
+      html += '<tr onclick="openDetail(\''+s.num+'\')">';
+      html += '<td style="font-weight:800;color:var(--teal)">'+s.num+'</td>';
+      html += '<td style="font-weight:500">'+s.title+'</td>';
+      html += '<td style="text-align:center">'+(s.fund?'<span style="background:var(--teal);color:#fff;border-radius:10px;padding:1px 7px;font-size:.68rem;font-weight:700">F</span>':'')+'</td>';
+      html += '<td><span class="ctag" style="background:'+cc.bg+';color:'+cc.color+'">'+s.change+'</span></td>';
+      html += '<td style="color:var(--gray-400);font-size:.8rem">'+s.old+'</td>';
+      html += '<td><span class="stag" style="background:'+STATUS_COLORS[st]+';color:'+STATUS_TEXT[st]+'">'+STATUS_LABELS[st]+'</span></td>';
+      html += '<td style="color:var(--gray-400);font-size:.8rem">'+answered+'/'+s.rubric.length+'</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    area.innerHTML = html;
+  }
+}
+
+function openDetail(num) {
+  SDETAIL = num;
+  var s = STDS.find(function(x){ return x.num === num; });
+  var area = document.getElementById('eval-list-area');
+  var detailArea = document.getElementById('eval-detail-area');
+  area.classList.add('hidden');
+  detailArea.classList.remove('hidden');
+
+  var cc = CHANGE_COLORS[s.change];
+  var filtered = getFiltered();
+  var idx = filtered.findIndex(function(x){ return x.num === num; });
+  var prev = filtered[idx-1];
+  var next = filtered[idx+1];
+
+  var html = '<div class="detail-panel">';
+  html += '<div class="detail-top">';
+  html += '<div>';
+  html += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
+  html += '<span style="font-weight:800;font-size:1.3rem;color:var(--teal)">'+s.num+'</span>';
+  if (s.fund) html += '<span style="background:var(--teal);color:#fff;border-radius:10px;padding:2px 10px;font-size:.75rem;font-weight:700">★ FUNDAMENTAL</span>';
+  html += '<span class="ctag" style="background:'+cc.bg+';color:'+cc.color+';font-size:.75rem;padding:3px 10px">'+s.change+'</span>';
+  html += '</div>';
+  html += '<h2>'+s.title+'</h2>';
+  html += '<div class="detail-meta"><strong>Previous standard(s):</strong> '+s.old+' — '+s.oldT+'</div>';
+  html += '<div class="detail-meta" style="margin-top:2px"><strong>Transition note:</strong> '+s.note+'</div>';
+  html += '</div>';
+  html += '<button class="back-btn" onclick="closeDetail()">← Back</button>';
+  html += '</div>';
+
+  html += '<p style="font-size:.87rem;color:var(--gray-600);margin-bottom:14px;line-height:1.7">'+s.text+'</p>';
+
+  html += '<div class="section-label">Required Evidence of Compliance</div>';
+  html += '<ul class="eoc-list" style="margin-bottom:14px">';
+  s.eoc.forEach(function(e){ html += '<li>'+e+'</li>'; });
+  html += '</ul>';
+
+  html += '<div class="section-label">Rubric Questions – Rate Your Compliance</div>';
+  s.rubric.forEach(function(q,i){
+    var k = s.num+'__'+i;
+    var cur = SSCORES[k] || '';
+    html += '<div class="rubric-q" style="background:'+STATUS_COLORS[cur]+'">';
+    html += '<div class="q-text"><span class="q-num">Q'+(i+1)+'.</span>'+q+'</div>';
+    html += '<div class="status-btns">';
+    Object.keys(STATUS_LABELS).forEach(function(v){
+      var isSel = cur === v;
+      var bc = isSel ? (STATUS_TEXT[v]||'#9ca3af') : '#d1d5db';
+      var bg = isSel ? (STATUS_COLORS[v]||'#f3f4f6') : '#fff';
+      var fc = isSel ? (STATUS_TEXT[v]||'#6b7280') : '#6b7280';
+      html += '<button class="status-btn" style="border-color:'+bc+';background:'+bg+';color:'+fc+';font-weight:'+(isSel?'700':'500')+'" onclick="setScore(\''+s.num+'\','+i+',\''+v+'\')">'+STATUS_LABELS[v]+'</button>';
+    });
+    html += '</div></div>';
+  });
+
+  html += '<div style="margin-top:14px;border-top:1px solid var(--gray-200);padding-top:12px">';
+  html += '<label style="font-weight:600;font-size:.85rem;color:var(--gray-700);display:block;margin-bottom:5px">Agency Notes / Documentation References</label>';
+  html += '<textarea class="notes-area" onchange="setNote(\''+s.num+'\',this.value)" placeholder="Enter notes, documentation references, responsible staff, or transition action items...">'+((SNOTES[s.num])||'')+'</textarea>';
+  html += '</div>';
+
+  html += '<div class="detail-nav">';
+  html += '<button class="dnav-btn" '+(prev?'onclick="openDetail(\''+prev.num+'\')"':'disabled')+'>← '+(prev?prev.num:'')+'</button>';
+  html += '<button class="dnav-btn" '+(next?'onclick="openDetail(\''+next.num+'\')"':'disabled')+''+(next?next.num:'')+' →</button>';
+  html += '</div>';
+  html += '</div>';
+
+  detailArea.innerHTML = html;
+}
+
+function closeDetail() {
+  SDETAIL = null;
+  document.getElementById('eval-detail-area').classList.add('hidden');
+  document.getElementById('eval-list-area').classList.remove('hidden');
+}
+
+function setScore(num, qi, val) {
+  SSCORES[num+'__'+qi] = val;
+  updateEvalStats();
+  openDetail(num);
+}
+
+function setNote(num, val) {
+  SNOTES[num] = val;
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+  buildStdChapters();
+
+  document.getElementById('e-filter-ch').addEventListener('change', function(){ renderEvalList(); });
+  document.getElementById('e-filter-status').addEventListener('change', function(){ renderEvalList(); });
+  document.getElementById('e-filter-fund').addEventListener('change', function(){ renderEvalList(); });
+
+  updateEvalStats();
+  renderEvalList();
+});
+</script>
+</body>
+</html>
