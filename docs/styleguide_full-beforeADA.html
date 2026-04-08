@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --color-primary: #273B7B;
+  --color-primary-hover: #1E2E60;
+  --color-secondary: #6C7BA8;
+  --color-secondary-hover: #4D5876;
+  --color-success: #2C7D30;
+  --color-success-hover: #256428;
+  --color-success-bg: #DAF8DA;
+  --color-warning: #FDBE3D;
+  --color-warning-hover: #E0B45A;
+  --color-warning-bg: #FEEAB8;
+  --color-warning-text: #805100;
+  --color-danger: #BB1717;
+  --color-danger-hover: #A10C0C;
+  --color-danger-bg: #FBE8E8;
+  --color-info-bg: #EBF2FE;
+  --color-info-text: #6C7BA8;
+  --color-text-primary: #3D3C3C;
+  --color-text-link: #273B7B;
+  --color-border: #949494;
+  --color-border-input: #767676;
+  --color-border-light: #DDDDDD;
+  --color-surface-white: #FFFFFF;
+  --color-surface-light: #F8F8F8;
+  --color-surface-hover: #F5F5F5;
+  --color-pill-default: #DDDDDD;
+  --color-pill-ghost-text: #767676;
+  --height-button-default: 40px;
+  --height-button-small: 30px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Roboto', sans-serif;
+  color: var(--color-text-primary);
+  background-color: #eeeeee;
+  padding: 40px;
+}
+.wrapper {
+  background: var(--color-surface-white);
+  border: 1px solid rgba(0,0,0,0.1);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px;
+  border-radius: 2px;
+}
+h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+h2 { font-size: 18px; font-weight: 700; border-bottom: 2px solid var(--color-border); padding-bottom: 10px; margin-top: 48px; margin-bottom: 20px; }
+h3 { font-size: 14px; font-weight: 700; color: var(--color-border); text-transform: uppercase; letter-spacing: 0.05em; margin: 24px 0 12px; }
+.grid { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
+.col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--color-border); letter-spacing: 0.06em; margin-bottom: 6px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--height-button-default); padding: 7px 12px;
+  border: none; border-radius: 3px;
+  font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 16px;
+  cursor: pointer; transition: background 0.15s; text-decoration: none; gap: 10px;
+  line-height: 19px;
+}
+.btn-sm {
+  height: var(--height-button-small); padding: 7px 8px;
+  font-size: 14px; gap: 6px; line-height: 16px;
+}
+.btn-sm i { font-size: 12px; }
+.primary   { background: var(--color-primary); color: #fff; }
+.primary:hover { background: var(--color-primary-hover); }
+.secondary { background: var(--color-secondary); color: #fff; }
+.secondary:hover { background: var(--color-secondary-hover); }
+.success   { background: var(--color-success); color: #fff; }
+.success:hover { background: var(--color-success-hover); }
+.warning   { background: var(--color-warning); color: var(--color-text-primary); }
+.warning:hover { background: var(--color-warning-hover); }
+.danger    { background: var(--color-danger); color: #fff; }
+.danger:hover { background: var(--color-danger-hover); }
+.action    { background: #fff; border: 1px solid var(--color-border); color: var(--color-text-primary); box-shadow: 0px 1px 2px rgba(0,0,0,0.06); }
+.action:hover { background: var(--color-surface-hover); }
+.action-round { background: #fff; border: 1px solid var(--color-primary); border-radius: 100px; color: var(--color-primary); }
+.action-round:hover { background: var(--color-surface-hover); }
+.btn-link  { background: transparent; border: none; color: var(--color-text-link); font-weight: 500; box-shadow: none; }
+.btn-link:hover { background: var(--color-info-bg); }
+
+/* danger selected state */
+.btn.danger-selected {
+  background: #A10C0C; color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #BB1717;
+}
+
+/* ── PILLS ── */
+.pill {
+  height: 19px; padding: 3px 8px 2px;
+  border-radius: 39px; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; display: inline-flex; align-items: center;
+  line-height: 14px; white-space: nowrap;
+}
+.p-danger  { background: var(--color-danger-bg); color: #A10C0C; }
+.p-success { background: var(--color-success-bg); color: var(--color-success); }
+.p-warning { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.p-info    { background: var(--color-info-bg); color: var(--color-info-text); }
+.p-ghost   { background: #fff; border: 1px solid var(--color-border); color: var(--color-pill-ghost-text); }
+.p-default { background: var(--color-pill-default); color: var(--color-text-primary); }
+
+/* ── TYPOGRAPHY ── */
+.type-row { display: flex; align-items: baseline; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--color-border-light); }
+.type-meta { font-size: 11px; color: var(--color-border); min-width: 220px; flex-shrink: 0; }
+
+/* ── FORMS ── */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-inline { display: flex; flex-direction: row; align-items: center; gap: 12px; }
+.field-lr { display: flex; flex-direction: row; align-items: center; gap: 12px; }
+label.field-label { font-weight: 600; font-size: 14px; line-height: 16px; }
+input[type="text"], textarea, select {
+  height: 40px; padding: 12px;
+  border: 1px solid var(--color-border-input); border-radius: 4px;
+  font-family: 'Roboto', sans-serif; font-size: 14px; color: var(--color-text-primary);
+  background: #fff; width: 220px;
+}
+textarea { height: 88px; resize: none; width: 220px; padding: 12px; }
+.select-wrap { position: relative; display: inline-block; }
+.select-wrap select { appearance: none; padding-right: 28px; width: 220px; }
+.select-wrap::after {
+  content: '\f078';
+  font-family: 'Font Awesome 6 Free'; font-weight: 900;
+  font-size: 12px; color: var(--color-text-primary);
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ── CHECKBOX & RADIO ── */
+.check-radio-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 14px; }
+.box { width: 20px; height: 20px; border-radius: 4px; border: 1px solid var(--color-border); background: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.box.checked { background: var(--color-secondary); border-color: var(--color-secondary); }
+.box.checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 11px; color: #fff; }
+.radio { width: 20px; height: 20px; border-radius: 100px; border: 1px solid var(--color-border-input); background: #fff; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.radio.checked { background: var(--color-secondary); border-color: var(--color-secondary); }
+.radio.checked::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+
+/* ── TOGGLE ── */
+.toggle-wrap { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.toggle { width: 54px; height: 24px; border-radius: 100px; position: relative; cursor: pointer; }
+.toggle.off { background: var(--color-surface-hover); border: 1px solid var(--color-border-input); }
+.toggle.on  { background: var(--color-secondary); border: 1px solid var(--color-primary); }
+.thumb {
+  width: 20px; height: 20px; border-radius: 50%; background: #fff;
+  position: absolute; top: 1px;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.07);
+}
+.toggle.off .thumb { left: 2px; border: 1px solid var(--color-border-input); }
+.toggle.on  .thumb { right: 2px; border: 1px solid var(--color-primary); }
+.toggle-label { font-size: 10px; font-weight: 700; line-height: 12px; }
+
+/* ── TABS ── */
+.tab-bar {
+  display: flex; align-items: flex-end;
+  border-bottom: 2px solid var(--color-border);
+  gap: 0;
+}
+.tab {
+  height: 32px; padding: 0 30px;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 400;
+  color: var(--color-text-primary); cursor: pointer; border: none; background: transparent;
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+  white-space: nowrap;
+}
+.tab.active { border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 700; }
+.tab i { font-size: 14px; font-weight: 400; }
+
+/* Primary nav tab bar */
+.tab-bar-primary { display: flex; background: var(--color-primary); border-radius: 3px 3px 0 0; height: 50px; }
+.tab-primary {
+  height: 50px; padding: 0 16px;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 14px; font-weight: 400; color: #fff; cursor: pointer;
+  border: none; background: transparent; white-space: nowrap;
+}
+.tab-primary.active { background: #fff; color: var(--color-primary); border-radius: 3px 3px 0 0; font-weight: 700; }
+
+/* Secondary nav tab bar */
+.tab-bar-secondary {
+  display: flex; background: #fff;
+  border-bottom: 1px solid var(--color-border-light); height: 50px;
+}
+.tab-secondary {
+  height: 50px; padding: 0 16px;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 14px; font-weight: 400; color: var(--color-text-primary); cursor: pointer;
+  border: none; background: transparent; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  white-space: nowrap;
+}
+.tab-secondary.active { border-bottom: 2px solid var(--color-primary); color: var(--color-primary); font-weight: 700; }
+
+/* ── TABLE ── */
+table.data-table { width: 100%; border-collapse: collapse; }
+table.data-table th {
+  height: 44px; border-bottom: 2px solid var(--color-border);
+  text-align: left; padding: 8px; font-weight: 700; font-size: 14px; line-height: 16px;
+}
+table.data-table td {
+  height: 52px; border-bottom: 1px solid var(--color-border);
+  padding: 8px; font-size: 14px; line-height: 16px;
+}
+table.data-table tr.stripe td { background: var(--color-surface-light); }
+.cell-link { color: var(--color-text-link); font-weight: 500; text-decoration: underline; cursor: pointer; }
+.cell-link-dashed { color: var(--color-secondary); font-weight: 500; border-bottom: 1.5px dashed var(--color-secondary); cursor: pointer; display: inline; }
+
+/* ── DROPDOWN ── */
+.dropdown { background: #fff; border: 1px solid var(--color-border); border-radius: 4px; width: 200px; overflow: hidden; }
+.dd-row {
+  height: 36px; padding: 8px; gap: 6px; cursor: pointer;
+  display: flex; align-items: center; font-size: 14px; font-weight: 400; color: var(--color-text-primary);
+}
+.dd-row:hover { background: var(--color-surface-hover); }
+.dd-row.selected { background: var(--color-secondary); color: #fff; }
+.dd-row.selected i { font-size: 12px; color: #fff; }
+
+/* ── ICONS ── */
+.icon-demo { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; color: var(--color-border); }
+.icon-demo i { color: var(--color-text-primary); }
+.icon-container-16 { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+.icon-container-12 { width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; }
+.icon-container-20 { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+
+/* ── COLOR SWATCHES ── */
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.swatch { width: 80px; }
+.swatch-box { height: 40px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); margin-bottom: 4px; }
+.swatch-name { font-size: 10px; font-weight: 700; color: var(--color-text-primary); line-height: 1.3; }
+.swatch-hex { font-size: 10px; color: var(--color-border); }
+
+/* ── SPACING DEMO ── */
+.spacing-row { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; font-size: 13px; }
+.spacing-bar { height: 8px; background: var(--color-secondary); border-radius: 2px; }
+
+/* ── SHADOWS ── */
+.shadow-demo { background: #fff; border-radius: 4px; padding: 16px 20px; font-size: 13px; font-weight: 600; display: inline-block; min-width: 160px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<h1>G2 Style Guide</h1>
+<p style="font-size:14px;color:var(--color-border);margin-top:4px;">Full visual reference — all sections from the style guide</p>
+
+<!-- ═══════════════════════════════ TYPOGRAPHY ═══════════════════════════════ -->
+<h2>1. Typography</h2>
+<p style="font-size:13px;color:var(--color-border);margin-bottom:20px;">Font family: <strong>Roboto</strong> — all labels, body, buttons, tabs. Legacy/alt: Inter (select text-prepend fields only).</p>
+
+<div style="background:var(--color-surface-light);border:1px solid var(--color-border-light);border-radius:4px;overflow:hidden;">
+
+  <!-- Button Label Default -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Button Label Default — 16px / 700</div>
+    <div style="font-size:16px;font-weight:700;line-height:19px;color:var(--color-text-primary);">The quick brown fox jumps over the lazy dog.</div>
+  </div>
+
+  <!-- Button Label Small -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Button Label Small — 14px / 700</div>
+    <div style="font-size:14px;font-weight:700;line-height:16px;color:var(--color-text-primary);">The quick brown fox jumps over the lazy dog.</div>
+  </div>
+
+  <!-- Field Label -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Field Label — 14px / 600</div>
+    <div style="font-size:14px;font-weight:600;line-height:16px;color:var(--color-text-primary);">User Account Information</div>
+  </div>
+
+  <!-- Body / Field Value -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Body / Field Value — 14px / 400</div>
+    <div style="font-size:14px;font-weight:400;line-height:16px;color:var(--color-text-primary);">Standard body copy for tables, form values, and tab labels.</div>
+  </div>
+
+  <!-- Tab Label -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Tab Label — 14px / 400</div>
+    <div style="font-size:14px;font-weight:400;line-height:16px;color:var(--color-text-primary);">Overview &nbsp;·&nbsp; Details &nbsp;·&nbsp; Activity &nbsp;·&nbsp; Settings</div>
+  </div>
+
+  <!-- Cell Header -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Cell Content (Header) — 14px / 700</div>
+    <div style="font-size:14px;font-weight:700;line-height:16px;color:var(--color-text-primary);">Column Header Label</div>
+  </div>
+
+  <!-- Cell Link -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Cell Content (Link) — 14px / 500 / Underline</div>
+    <div style="font-size:14px;font-weight:500;line-height:16px;color:var(--color-text-link);text-decoration:underline;cursor:pointer;">Linked Cell Content</div>
+  </div>
+
+  <!-- Dashed Sub-link -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Dashed Sub-link — 14px / 500</div>
+    <div style="display:inline-flex;align-items:center;gap:5px;">
+      <span style="font-size:14px;font-weight:500;line-height:16px;color:var(--color-secondary);border-bottom:1.5px dashed var(--color-secondary);cursor:pointer;">Dashed reference link</span>
+      <svg width="11" height="11" viewBox="0 0 512 512" style="flex-shrink:0;"><path fill="#6C7BA8" d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"/></svg>
+    </div>
+  </div>
+
+  <!-- Pill / Badge -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Pill / Badge — 12px / 700 / Uppercase</div>
+    <div style="font-size:12px;font-weight:700;line-height:14px;text-transform:uppercase;color:var(--color-text-primary);">Status Label</div>
+  </div>
+
+  <!-- Toggle Label -->
+  <div style="padding:20px 24px;border-bottom:1px solid var(--color-border-light);">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:8px;">Toggle Label — 10px / 700</div>
+    <div style="font-size:10px;font-weight:700;line-height:12px;color:var(--color-text-primary);">On &nbsp;/&nbsp; Off</div>
+  </div>
+
+  <!-- Icon label sizes -->
+  <div style="padding:20px 24px;">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-border);margin-bottom:12px;">Icon Sizes (inline SVG · fa-droplet)</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span style="font-size:11px;color:var(--color-border);min-width:200px;">Icon small (btn-sm) — 12px</span>
+        <svg width="12" height="12" viewBox="0 0 384 512"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span style="font-size:11px;color:var(--color-border);min-width:200px;">Icon default — 14px</span>
+        <svg width="14" height="14" viewBox="0 0 384 512"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span style="font-size:11px;color:var(--color-border);min-width:200px;">Icon button — 16px</span>
+        <svg width="16" height="16" viewBox="0 0 384 512"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════ COLORS ═══════════════════════════════ -->
+<h2>2. Color Palette</h2>
+
+<h3>Brand / Primary</h3>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-box" style="background:#273B7B;"></div><div class="swatch-name">color-primary</div><div class="swatch-hex">#273B7B</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#1E2E60;"></div><div class="swatch-name">color-primary-hover</div><div class="swatch-hex">#1E2E60</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#6C7BA8;"></div><div class="swatch-name">color-secondary</div><div class="swatch-hex">#6C7BA8</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#4D5876;"></div><div class="swatch-name">color-secondary-hover</div><div class="swatch-hex">#4D5876</div></div>
+</div>
+
+<h3>Semantic</h3>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-box" style="background:#2C7D30;"></div><div class="swatch-name">color-success</div><div class="swatch-hex">#2C7D30</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#256428;"></div><div class="swatch-name">color-success-hover</div><div class="swatch-hex">#256428</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#DAF8DA;"></div><div class="swatch-name">color-success-bg</div><div class="swatch-hex">#DAF8DA</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#FDBE3D;"></div><div class="swatch-name">color-warning</div><div class="swatch-hex">#FDBE3D</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#E0B45A;"></div><div class="swatch-name">color-warning-hover</div><div class="swatch-hex">#E0B45A</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#FEEAB8;"></div><div class="swatch-name">color-warning-bg</div><div class="swatch-hex">#FEEAB8</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#805100;"></div><div class="swatch-name">color-warning-text</div><div class="swatch-hex">#805100</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#BB1717;"></div><div class="swatch-name">color-danger</div><div class="swatch-hex">#BB1717</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#A10C0C;"></div><div class="swatch-name">color-danger-hover</div><div class="swatch-hex">#A10C0C</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#FBE8E8;"></div><div class="swatch-name">color-danger-bg</div><div class="swatch-hex">#FBE8E8</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#EBF2FE;"></div><div class="swatch-name">color-info-bg</div><div class="swatch-hex">#EBF2FE</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#6C7BA8;"></div><div class="swatch-name">color-info-text</div><div class="swatch-hex">#6C7BA8</div></div>
+</div>
+
+<h3>Neutrals</h3>
+<div class="swatches">
+  <div class="swatch"><div class="swatch-box" style="background:#3D3C3C;"></div><div class="swatch-name">color-text-primary</div><div class="swatch-hex">#3D3C3C</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#273B7B;"></div><div class="swatch-name">color-text-link</div><div class="swatch-hex">#273B7B</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#949494;"></div><div class="swatch-name">color-border</div><div class="swatch-hex">#949494</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#767676;"></div><div class="swatch-name">color-border-input</div><div class="swatch-hex">#767676</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#DDDDDD;"></div><div class="swatch-name">color-border-light</div><div class="swatch-hex">#DDDDDD</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#FFFFFF;border:1px solid #ddd;"></div><div class="swatch-name">color-surface-white</div><div class="swatch-hex">#FFFFFF</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#F8F8F8;"></div><div class="swatch-name">color-surface-light</div><div class="swatch-hex">#F8F8F8</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#F5F5F5;"></div><div class="swatch-name">color-surface-hover</div><div class="swatch-hex">#F5F5F5</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#DDDDDD;"></div><div class="swatch-name">color-pill-default</div><div class="swatch-hex">#DDDDDD</div></div>
+  <div class="swatch"><div class="swatch-box" style="background:#767676;"></div><div class="swatch-name">color-pill-ghost-text</div><div class="swatch-hex">#767676</div></div>
+</div>
+
+<!-- ═══════════════════════════════ BUTTONS ═══════════════════════════════ -->
+<h2>3. Buttons</h2>
+
+<h3>Default Size — All Variants</h3>
+<div class="grid">
+  <div><div class="label">Primary</div><button class="btn primary">Primary</button></div>
+  <div><div class="label">Secondary</div><button class="btn secondary">Secondary</button></div>
+  <div><div class="label">Success</div><button class="btn success">Success</button></div>
+  <div><div class="label">Warning</div><button class="btn warning">Warning</button></div>
+  <div><div class="label">Danger</div><button class="btn danger">Danger</button></div>
+  <div><div class="label">Action</div><button class="btn action">Action</button></div>
+  <div><div class="label">Action Round</div><button class="btn action-round">Action Round</button></div>
+  <div><div class="label">Link</div><button class="btn btn-link">Link Button</button></div>
+</div>
+
+<h3>Small Size</h3>
+<div class="grid">
+  <div><div class="label">Small Primary</div><button class="btn btn-sm primary"><i class="fa-solid fa-plus"></i> Small Primary</button></div>
+  <div><div class="label">Small Secondary</div><button class="btn btn-sm secondary">Small Secondary</button></div>
+  <div><div class="label">Small Action</div><button class="btn btn-sm action">Small Action</button></div>
+  <div><div class="label">Small Danger</div><button class="btn btn-sm danger">Small Danger</button></div>
+  <div><div class="label">Small Action Round</div><button class="btn btn-sm action-round">Small Round</button></div>
+</div>
+
+<h3>With Icons</h3>
+<div class="grid">
+  <div><div class="label">Icon + Label</div><button class="btn primary"><i class="fa-solid fa-upload"></i> Upload</button></div>
+  <div><div class="label">Label + Icon</div><button class="btn action">Export <i class="fa-solid fa-arrow-right"></i></button></div>
+  <div><div class="label">Icon Only</div><button class="btn action" style="width:40px;padding:0;"><i class="fa-solid fa-ellipsis"></i></button></div>
+</div>
+
+<h3>Selected / Focus States</h3>
+<div class="grid">
+  <div><div class="label">Danger Selected</div><button class="btn danger-selected">Danger Selected</button></div>
+</div>
+
+<!-- ═══════════════════════════════ PILLS ═══════════════════════════════ -->
+<h2>4. Pills (Status Badges)</h2>
+<div class="grid" style="margin-bottom:0;">
+  <div><div class="label">Success</div><span class="pill p-success">Success</span></div>
+  <div><div class="label">Danger</div><span class="pill p-danger">Danger</span></div>
+  <div><div class="label">Warning</div><span class="pill p-warning">Warning</span></div>
+  <div><div class="label">Info</div><span class="pill p-info">Info</span></div>
+  <div><div class="label">Ghost</div><span class="pill p-ghost">Ghost</span></div>
+  <div><div class="label">Default</div><span class="pill p-default">Default</span></div>
+</div>
+
+<!-- ═══════════════════════════════ TABS ═══════════════════════════════ -->
+<h2>5. Tabs</h2>
+
+<h3>Standard Tab Bar</h3>
+<div class="tab-bar">
+  <button class="tab active"><i class="fa-regular fa-house"></i> Overview</button>
+  <button class="tab">Details</button>
+  <button class="tab">Activity</button>
+  <button class="tab">Settings</button>
+</div>
+<div style="height:16px;"></div>
+
+<h3>Primary Navigation Tab Bar</h3>
+<div class="tab-bar-primary">
+  <button class="tab-primary active">Dashboard</button>
+  <button class="tab-primary">Reports</button>
+  <button class="tab-primary">Users</button>
+  <button class="tab-primary">Settings</button>
+</div>
+<div style="height:16px;"></div>
+
+<h3>Secondary Navigation Tab Bar</h3>
+<div class="tab-bar-secondary">
+  <button class="tab-secondary active">All Items</button>
+  <button class="tab-secondary">Active</button>
+  <button class="tab-secondary">Archived</button>
+</div>
+<div style="height:16px;"></div>
+
+<!-- ═══════════════════════════════ FORMS ═══════════════════════════════ -->
+<h2>6. Form Elements</h2>
+
+<h3>Label Positions</h3>
+<div class="grid" style="align-items:flex-start;gap:32px;">
+  <div class="field">
+    <label class="field-label">Top Label (Stacked)</label>
+    <input type="text" placeholder="Enter text...">
+  </div>
+  <div class="field-inline">
+    <label class="field-label" style="min-width:80px;">Left Label</label>
+    <input type="text" placeholder="Enter text...">
+  </div>
+  <div class="field-lr">
+    <input type="text" placeholder="Enter text..." style="width:160px;">
+    <label class="field-label">Right Label</label>
+  </div>
+  <div class="field-lr">
+    <label class="field-label">Left</label>
+    <input type="text" placeholder="Enter text..." style="width:120px;">
+    <label class="field-label">Right</label>
+  </div>
+</div>
+
+<h3>Input Types</h3>
+<div class="grid" style="align-items:flex-start;gap:24px;margin-top:12px;">
+  <div class="field">
+    <label class="field-label">Text Input</label>
+    <input type="text" placeholder="Enter text...">
+  </div>
+  <div class="field">
+    <label class="field-label">Select</label>
+    <div class="select-wrap">
+      <select>
+        <option>Option 1</option>
+        <option>Option 2</option>
+        <option>Option 3</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label class="field-label">Textarea</label>
+    <textarea placeholder="Enter longer text..."></textarea>
+  </div>
+</div>
+
+<h3>Checkbox</h3>
+<div style="margin-bottom:16px;">
+  <div class="check-radio-row"><div class="box"></div> Unchecked</div>
+  <div class="check-radio-row"><div class="box checked"></div> Checked</div>
+</div>
+
+<h3>Radio</h3>
+<div style="margin-bottom:16px;">
+  <div class="check-radio-row"><div class="radio"></div> Unchecked</div>
+  <div class="check-radio-row"><div class="radio checked"></div> Checked</div>
+</div>
+
+<h3>Toggle</h3>
+<div class="grid" style="gap:32px;">
+  <div>
+    <div class="label" style="margin-bottom:8px;">Toggle Off</div>
+    <div class="toggle-wrap">
+      <div class="toggle off"><div class="thumb"></div></div>
+      <span class="toggle-label">Off</span>
+    </div>
+  </div>
+  <div>
+    <div class="label" style="margin-bottom:8px;">Toggle On</div>
+    <div class="toggle-wrap">
+      <div class="toggle on"><div class="thumb"></div></div>
+      <span class="toggle-label">On</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ TABLE ═══════════════════════════════ -->
+<h2>7. Data Table</h2>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Item Name</th>
+      <th>Status</th>
+      <th>Type</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Standard Row</td>
+      <td><span class="pill p-success">Active</span></td>
+      <td><span class="cell-link">View Details</span></td>
+      <td><span class="cell-link-dashed">Sub-link</span></td>
+    </tr>
+    <tr class="stripe">
+      <td>Striped Row</td>
+      <td><span class="pill p-warning">Pending</span></td>
+      <td><span class="cell-link">Edit Record</span></td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Another Row</td>
+      <td><span class="pill p-danger">Error</span></td>
+      <td><span class="cell-link">View Details</span></td>
+      <td><span class="cell-link-dashed">Sub-link</span></td>
+    </tr>
+    <tr class="stripe">
+      <td>Info Row</td>
+      <td><span class="pill p-info">Info</span></td>
+      <td><span class="cell-link">View Details</span></td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Ghost Row</td>
+      <td><span class="pill p-ghost">Draft</span></td>
+      <td><span class="cell-link">Edit Record</span></td>
+      <td><span class="cell-link-dashed">Sub-link</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════ DROPDOWN ═══════════════════════════════ -->
+<h2>8. Dropdown Link Menu</h2>
+<div class="dropdown">
+  <div class="dd-row">Default Row</div>
+  <div class="dd-row" style="background:var(--color-surface-hover);">Hover Row</div>
+  <div class="dd-row selected"><i class="fa-solid fa-check" style="font-size:12px;margin-right:4px;"></i>Selected Row</div>
+  <div class="dd-row">Another Row</div>
+</div>
+
+<!-- ═══════════════════════════════ ICONS ═══════════════════════════════ -->
+<h2>9. Icons</h2>
+
+<!-- Inline SVG defs: droplet solid + regular paths from FA6 Free -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+  <symbol id="ico-droplet-solid" viewBox="0 0 384 512">
+    <path d="M192 512C86 512 0 426 0 320C0 258.3 27.4 197.6 75.2 155.2L192 0l116.8 155.2C356.6 197.6 384 258.3 384 320c0 106-86 192-192 192z"/>
+  </symbol>
+  <symbol id="ico-droplet-regular" viewBox="0 0 384 512">
+    <path d="M192 0L75.2 155.2C27.4 197.6 0 258.3 0 320C0 426 86 512 192 512s192-86 192-192c0-61.7-27.4-122.4-75.2-164.8L192 0zm0 464c-79.5 0-144-64.5-144-144c0-47.5 21.1-94.1 57.9-126.7L192 68.6l86.1 124.7C314.9 225.9 336 272.5 336 320c0 79.5-64.5 144-144 144z"/>
+  </symbol>
+</svg>
+
+<style>
+.icon-svg { display:inline-block; flex-shrink:0; }
+</style>
+
+<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;gap:0;border:1px solid var(--color-border-light);border-radius:4px;overflow:hidden;margin-bottom:8px;">
+
+  <!-- Header -->
+  <div style="padding:10px 16px;background:var(--color-surface-light);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-border);border-bottom:1px solid var(--color-border-light);">Size</div>
+  <div style="padding:10px 16px;background:var(--color-surface-light);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-border);border-bottom:1px solid var(--color-border-light);">Solid — weight 900<br><span style="font-weight:400;text-transform:none;letter-spacing:0;">interactive / button icons</span></div>
+  <div style="padding:10px 16px;background:var(--color-surface-light);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-border);border-bottom:1px solid var(--color-border-light);">Regular — weight 400<br><span style="font-weight:400;text-transform:none;letter-spacing:0;">nav tab icons</span></div>
+  <div style="padding:10px 16px;background:var(--color-surface-light);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-border);border-bottom:1px solid var(--color-border-light);">Usage</div>
+
+  <!-- Small -->
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;flex-direction:column;gap:4px;">
+    <span style="font-size:13px;font-weight:600;">Small</span>
+    <span style="font-size:11px;color:var(--color-border);">12×12px container · 12px</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;gap:12px;">
+    <svg class="icon-svg" width="12" height="12"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+    <span style="font-size:11px;color:var(--color-border);">filled, all strokes</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;gap:12px;">
+    <svg class="icon-svg" width="12" height="12"><use href="#ico-droplet-regular" fill="#3D3C3C"/></svg>
+    <span style="font-size:11px;color:var(--color-border);">outline only</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);font-size:12px;color:var(--color-text-primary);line-height:1.6;">
+    Inside <code style="font-size:11px;background:var(--color-surface-light);padding:1px 4px;border-radius:2px;">btn-sm</code> buttons
+  </div>
+
+  <!-- Standard -->
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;flex-direction:column;gap:4px;">
+    <span style="font-size:13px;font-weight:600;">Standard</span>
+    <span style="font-size:11px;color:var(--color-border);">16×16px container · 14px</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;gap:12px;">
+    <svg class="icon-svg" width="14" height="14"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+    <span style="font-size:11px;color:var(--color-border);">filled, all strokes</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;gap:12px;">
+    <svg class="icon-svg" width="14" height="14"><use href="#ico-droplet-regular" fill="#3D3C3C"/></svg>
+    <span style="font-size:11px;color:var(--color-border);">outline only</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);font-size:12px;color:var(--color-text-primary);line-height:1.6;">
+    Default buttons, inline actions, nav tab icons
+  </div>
+
+  <!-- Button -->
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;flex-direction:column;gap:4px;">
+    <span style="font-size:13px;font-weight:600;">Button</span>
+    <span style="font-size:11px;color:var(--color-border);">16×16px container · 16px</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;gap:12px;">
+    <svg class="icon-svg" width="16" height="16"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+    <span style="font-size:11px;color:var(--color-border);">filled, all strokes</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;gap:12px;">
+    <svg class="icon-svg" width="16" height="16"><use href="#ico-droplet-regular" fill="#3D3C3C"/></svg>
+    <span style="font-size:11px;color:var(--color-border);">outline only</span>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--color-border-light);font-size:12px;color:var(--color-text-primary);line-height:1.6;">
+    Alongside label text in default-size buttons
+  </div>
+
+  <!-- Large -->
+  <div style="padding:16px;display:flex;flex-direction:column;gap:4px;">
+    <span style="font-size:13px;font-weight:600;">Large</span>
+    <span style="font-size:11px;color:var(--color-border);">20×20px container · 16px</span>
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <svg class="icon-svg" width="16" height="16"><use href="#ico-droplet-solid" fill="#6C7BA8"/></svg>
+      <span style="font-size:11px;color:var(--color-border);">#6C7BA8 — info / sort</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <svg class="icon-svg" width="16" height="16"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+      <span style="font-size:11px;color:var(--color-border);">#3D3C3C — action</span>
+    </div>
+  </div>
+  <div style="padding:16px;display:flex;align-items:center;gap:12px;">
+    <svg class="icon-svg" width="16" height="16"><use href="#ico-droplet-regular" fill="#6C7BA8"/></svg>
+    <span style="font-size:11px;color:var(--color-border);">outline only</span>
+  </div>
+  <div style="padding:16px;font-size:12px;color:var(--color-text-primary);line-height:1.6;">
+    Table sort indicators &amp; row-level action icons
+  </div>
+
+</div>
+
+<!-- In-context button examples -->
+<h3>In-Context Button Examples</h3>
+<div class="grid" style="gap:12px;align-items:center;">
+  <button class="btn primary">
+    <svg width="16" height="16" style="flex-shrink:0;"><use href="#ico-droplet-solid" fill="white"/></svg>
+    Default Button
+  </button>
+  <button class="btn btn-sm action">
+    <svg width="12" height="12" style="flex-shrink:0;"><use href="#ico-droplet-solid" fill="#3D3C3C"/></svg>
+    Small Button
+  </button>
+  <button class="btn action">
+    <svg width="16" height="16" style="flex-shrink:0;"><use href="#ico-droplet-regular" fill="#273B7B"/></svg>
+    Nav Tab Style
+  </button>
+  <button class="btn action" style="width:40px;padding:0;justify-content:center;">
+    <svg width="16" height="16"><use href="#ico-droplet-solid" fill="#6C7BA8"/></svg>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════ SPACING & SIZING ═══════════════════════════════ -->
+<h2>10. Spacing & Sizing</h2>
+
+<h3>Button Heights</h3>
+<div class="grid" style="gap:16px;align-items:flex-end;">
+  <div><div class="label">40px default</div><button class="btn action" style="width:120px;">Default</button></div>
+  <div><div class="label">30px small</div><button class="btn btn-sm action" style="width:120px;">Small</button></div>
+</div>
+
+<h3>Key Measurements</h3>
+<div style="font-size:13px;display:grid;grid-template-columns:1fr 1fr;gap:4px 32px;margin-bottom:8px;">
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Button default height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">40px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Button small height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">30px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Form field height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">40px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Textarea min height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">88px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Table header height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">44px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Table row height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">52px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Tab bar (standard)</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">32px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Tab bar (nav)</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">50px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Toggle track</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">54×24px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Toggle thumb</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">20×20px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Checkbox / Radio</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">20×20px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Pill height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">19px</div>
+  <div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);"><span style="color:var(--color-border);">Dropdown row height</span></div><div style="padding:6px 0;border-bottom:1px solid var(--color-border-light);font-weight:600;">36px</div>
+</div>
+
+<!-- ═══════════════════════════════ BORDER RADIUS ═══════════════════════════════ -->
+<h2>11. Border Radius</h2>
+<div class="grid" style="gap:16px;align-items:flex-start;">
+  <div class="icon-demo">
+    <div style="width:64px;height:32px;background:var(--color-secondary);border-radius:3px;"></div>
+    <div>3px — buttons</div>
+  </div>
+  <div class="icon-demo">
+    <div style="width:64px;height:32px;background:var(--color-secondary);border-radius:100px;"></div>
+    <div>100px — round btn</div>
+  </div>
+  <div class="icon-demo">
+    <div style="width:64px;height:32px;background:var(--color-secondary);border-radius:4px;"></div>
+    <div>4px — inputs</div>
+  </div>
+  <div class="icon-demo">
+    <div style="width:60px;height:19px;background:var(--color-secondary);border-radius:39px;"></div>
+    <div>39px — pills</div>
+  </div>
+  <div class="icon-demo">
+    <div style="width:64px;height:32px;background:var(--color-secondary);border-radius:3px 3px 0 0;"></div>
+    <div>3/3/0/0 — tabs</div>
+  </div>
+  <div class="icon-demo">
+    <div style="width:64px;height:32px;background:var(--color-secondary);border-radius:2px;"></div>
+    <div>2px — page wrap</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ SHADOWS ═══════════════════════════════ -->
+<h2>12. Shadows</h2>
+<div class="grid" style="gap:24px;align-items:flex-start;">
+  <div class="icon-demo">
+    <div class="shadow-demo" style="box-shadow:0px 1px 2px rgba(0,0,0,0.06);">Action button</div>
+    <div>0px 1px 2px rgba(0,0,0,0.06)</div>
+  </div>
+  <div class="icon-demo">
+    <div style="width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0px 2px 2px rgba(0,0,0,0.07);border:1px solid var(--color-border-input);"></div>
+    <div>Toggle thumb</div>
+    <div style="font-size:10px;color:var(--color-border);">0px 2px 2px rgba(0,0,0,0.07)</div>
+  </div>
+  <div class="icon-demo">
+    <button class="btn danger" style="outline: 2px solid #fff; box-shadow: 0 0 0 4px #BB1717;">Focus Ring</button>
+    <div>0 0 0 2px [button-color]</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
